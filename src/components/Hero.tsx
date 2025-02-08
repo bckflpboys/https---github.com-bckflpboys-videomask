@@ -83,11 +83,39 @@ export default function Hero() {
           </div>
 
           {/* Trust badges */}
-          <div className="mt-16 flex flex-wrap justify-center gap-8 opacity-60">
-            <img src="/youtube.svg" alt="YouTube" className="h-6" />
-            <img src="/instagram.svg" alt="Instagram" className="h-6" />
-            <img src="/tiktok.svg" alt="TikTok" className="h-6" />
-            <img src="/twitter.svg" alt="Twitter" className="h-6" />
+          <div className="mt-8 flex justify-center space-x-6">
+            <div className="flex items-center space-x-2">
+              <img 
+                src="https://upload.wikimedia.org/wikipedia/en/a/a9/TikTok_logo.svg" 
+                alt="TikTok" 
+                className="h-12 w-12 opacity-80 hover:opacity-100 transition-opacity"
+              />
+              <span className="text-gray-600">TikTok</span>
+            </div>
+            <div className="flex items-center space-x-2">
+              <img 
+                src="https://upload.wikimedia.org/wikipedia/commons/9/95/Instagram_logo_2022.svg" 
+                alt="Instagram" 
+                className="h-8 w-8 opacity-80 hover:opacity-100 transition-opacity"
+              />
+              <span className="text-gray-600">Instagram</span>
+            </div>
+            <div className="flex items-center space-x-2">
+              <img 
+                src="https://upload.wikimedia.org/wikipedia/commons/0/09/YouTube_full-color_icon_%282017%29.svg" 
+                alt="YouTube" 
+                className="h-8 w-8 opacity-80 hover:opacity-100 transition-opacity"
+              />
+              <span className="text-gray-600">YouTube</span>
+            </div>
+            <div className="flex items-center space-x-2">
+              <img 
+                src="https://upload.wikimedia.org/wikipedia/commons/6/6f/Logo_of_Twitter.svg" 
+                alt="Twitter" 
+                className="h-8 w-8 opacity-80 hover:opacity-100 transition-opacity"
+              />
+              <span className="text-gray-600">Twitter</span>
+            </div>
           </div>
         </div>
       </div>

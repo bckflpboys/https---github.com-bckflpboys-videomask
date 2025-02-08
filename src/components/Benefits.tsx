@@ -68,9 +68,42 @@ export default function Benefits() {
           <h2 className="text-4xl font-bold mb-4">
             Why Choose VideoMask
           </h2>
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+          <p className="text-xl text-gray-600 max-w-3xl mx-auto mb-8">
             Unlock the full potential of your social media content with our advanced video optimization technology
           </p>
+          <div className="flex justify-center mb-12">
+            <div className="inline-flex items-center p-[2px] rounded-full bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 animate-gradient-x hover:from-pink-400 hover:via-purple-400 hover:to-blue-400 transition-all duration-500">
+              <div className="inline-flex items-center px-2 py-2 rounded-full bg-white">
+                <span className="px-4 py-2 text-sm font-medium text-gray-700">
+                  Optimized for
+                </span>
+                <div className="flex items-center space-x-4 px-4 py-2 bg-white rounded-full shadow-sm border border-gray-200">
+                  <div className="flex items-center space-x-4">
+                    <img 
+                      src="https://upload.wikimedia.org/wikipedia/en/a/a9/TikTok_logo.svg" 
+                      alt="TikTok" 
+                      className="h-12 w-12 opacity-80 hover:opacity-100 transition-opacity" 
+                    />
+                    <img 
+                      src="https://upload.wikimedia.org/wikipedia/commons/9/95/Instagram_logo_2022.svg" 
+                      alt="Instagram" 
+                      className="h-8 w-8 opacity-80 hover:opacity-100 transition-opacity" 
+                    />
+                    <img 
+                      src="https://upload.wikimedia.org/wikipedia/commons/0/09/YouTube_full-color_icon_%282017%29.svg" 
+                      alt="YouTube" 
+                      className="h-8 w-8 opacity-80 hover:opacity-100 transition-opacity" 
+                    />
+                    <img 
+                      src="https://upload.wikimedia.org/wikipedia/commons/6/6f/Logo_of_Twitter.svg" 
+                      alt="Twitter" 
+                      className="h-8 w-8 opacity-80 hover:opacity-100 transition-opacity" 
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -90,19 +123,6 @@ export default function Benefits() {
               </p>
             </div>
           ))}
-        </div>
-
-        <div className="mt-16 text-center">
-          <div className="inline-flex items-center p-1 rounded-full bg-gray-100">
-            <span className="px-4 py-2 text-sm text-gray-600">
-              Optimized for
-            </span>
-            <span className="flex space-x-3 px-4 py-2 bg-white rounded-full shadow-sm">
-              <img src="/tiktok.svg" alt="TikTok" className="h-5" />
-              <img src="/instagram.svg" alt="Instagram" className="h-5" />
-              <img src="/youtube.svg" alt="YouTube" className="h-5" />
-            </span>
-          </div>
         </div>
       </div>
     </section>
