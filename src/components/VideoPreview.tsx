@@ -22,6 +22,16 @@ export default function VideoPreview({ file, devicePreset, onConfirm, onCancel }
     return `${seconds.toFixed(2)}s (${minutes} min)`;
   };
 
+  const formatAspectRatio = (width: number, height: number) => {
+    const gcd = (a: number, b: number): number => {
+      return b === 0 ? a : gcd(b, a % b);
+    };
+    const divisor = gcd(width, height);
+    const ratioWidth = width / divisor;
+    const ratioHeight = height / divisor;
+    return `${Math.round(ratioWidth)}:${Math.round(ratioHeight)}`;
+  };
+
   useEffect(() => {
     let objectUrl = '';
     
@@ -165,7 +175,7 @@ export default function VideoPreview({ file, devicePreset, onConfirm, onCancel }
                 </div>
                 <div className="flex justify-between">
                   <dt className="text-gray-500">Aspect Ratio</dt>
-                  <dd className="text-gray-900">{metadata.aspectRatio.toFixed(2)}</dd>
+                  <dd className="text-gray-900">{formatAspectRatio(metadata.width, metadata.height)}</dd>
                 </div>
                 {metadata.frameRate && (
                   <div className="flex justify-between">
