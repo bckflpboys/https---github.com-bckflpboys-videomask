@@ -21,9 +21,9 @@ const plans: Plan[] = [
     name: 'Free',
     price: '$0',
     features: [
-      { id: 'free-1', text: 'Upload up to 5 videos per month' },
-      { id: 'free-2', text: 'Basic metadata editing' },
-      { id: 'free-3', text: 'Standard quality exports' },
+      { id: 'free-1', text: 'Basic device metadata masking' },
+      { id: 'free-2', text: 'Up to 5 videos per month' },
+      { id: 'free-3', text: '3 device profiles (iPhone, Samsung, Google)' },
       { id: 'free-4', text: 'Community support' }
     ],
     cta: 'Get Started',
@@ -34,12 +34,12 @@ const plans: Plan[] = [
     price: '$9.99',
     period: '/month',
     features: [
-      { id: 'pro-1', text: 'Upload up to 50 videos per month' },
-      { id: 'pro-2', text: 'Advanced metadata editing' },
-      { id: 'pro-3', text: 'HD quality exports' },
-      { id: 'pro-4', text: 'Priority support' },
-      { id: 'pro-5', text: 'Custom device profiles' },
-      { id: 'pro-6', text: 'Batch processing' }
+      { id: 'pro-1', text: 'Advanced metadata customization' },
+      { id: 'pro-2', text: 'Up to 50 videos per month' },
+      { id: 'pro-3', text: '20+ device profiles' },
+      { id: 'pro-4', text: 'Custom timestamp and location data' },
+      { id: 'pro-5', text: 'Batch processing' },
+      { id: 'pro-6', text: 'Priority support' }
     ],
     cta: 'Start Pro',
     popular: true
@@ -48,15 +48,14 @@ const plans: Plan[] = [
     name: 'Enterprise',
     price: 'Custom',
     features: [
-      { id: 'ent-1', text: 'Unlimited video uploads' },
-      { id: 'ent-2', text: 'Advanced metadata editing' },
-      { id: 'ent-3', text: '4K quality exports' },
-      { id: 'ent-4', text: 'Dedicated support' },
-      { id: 'ent-5', text: 'Custom device profiles' },
-      { id: 'ent-6', text: 'API access' },
-      { id: 'ent-7', text: 'Custom integration' }
+      { id: 'ent-1', text: 'Unlimited videos and device profiles' },
+      { id: 'ent-2', text: 'Custom device profile creation' },
+      { id: 'ent-3', text: 'API access for automation' },
+      { id: 'ent-4', text: 'Advanced analytics' },
+      { id: 'ent-5', text: 'Dedicated account manager' },
+      { id: 'ent-6', text: '24/7 priority support' }
     ],
-    cta: 'Contact Us',
+    cta: 'Contact Sales',
     popular: false
   }
 ];

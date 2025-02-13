@@ -1,6 +1,11 @@
 'use client';
 
 import { useState } from 'react';
+import Link from 'next/link';
+import { MdPhoneIphone } from 'react-icons/md';
+import { BiCustomize } from 'react-icons/bi';
+import { BsLightningChargeFill } from 'react-icons/bs';
+import { FiUploadCloud } from 'react-icons/fi';
 
 export default function Hero() {
   const [isDragging, setIsDragging] = useState(false);
@@ -22,99 +27,125 @@ export default function Hero() {
   };
 
   return (
-    <section className="relative pt-20 pb-16 overflow-hidden">
+    <section className="relative min-h-screen flex items-center justify-center py-20 overflow-hidden bg-gradient-to-b from-white via-blue-50 to-white">
       {/* Background decoration */}
       <div className="absolute inset-0 z-0">
-        <div className="absolute top-0 left-1/2 w-[1000px] h-[1000px] -translate-x-1/2 -translate-y-1/2 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-full opacity-50 blur-3xl" />
+        <div className="absolute top-0 left-1/2 w-[1000px] h-[1000px] -translate-x-1/2 -translate-y-1/2 bg-gradient-to-r from-blue-100/50 to-indigo-100/50 rounded-full opacity-70 blur-3xl" />
+        <div className="absolute bottom-0 right-0 w-[800px] h-[800px] bg-gradient-to-l from-blue-100/30 to-indigo-100/30 rounded-full opacity-70 blur-3xl" />
       </div>
 
-      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-20 pb-16">
-        <div className="text-center">
-          <h1 className="text-5xl sm:text-6xl md:text-7xl font-bold mb-8">
-            Transform Your{' '}
-            <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-indigo-600">
-              Content
-            </span>
-            <br />
-            Share with{' '}
-            <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-indigo-600">
-              Impact
-            </span>
-          </h1>
+      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="text-center space-y-16">
+          {/* Hero Title and Description */}
+          <div className="space-y-8">
+            <h1 className="text-5xl sm:text-6xl md:text-7xl font-bold">
+              Make Videos Look{' '}
+              <span className="relative">
+                <span className="bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
+                  Native
+                </span>
+                <div className="absolute -bottom-2 left-0 w-full h-1 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-full opacity-50"></div>
+              </span>
+              <br />
+              to Any{' '}
+              <span className="relative">
+                <span className="bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
+                  Device
+                </span>
+                <div className="absolute -bottom-2 left-0 w-full h-1 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-full opacity-50"></div>
+              </span>
+            </h1>
 
-          <p className="text-xl text-gray-600 mb-12 max-w-3xl mx-auto">
-            Upload your videos and customize metadata for each social platform.
-            Reach your audience effectively across all channels.
-          </p>
+            <p className="text-xl text-gray-600 max-w-2xl mx-auto leading-relaxed">
+              <ul className="space-y-2 list-none flex flex-col items-center">
+                <li className="flex items-center gap-2 justify-center">
+                  <span className="w-1.5 h-1.5 rounded-full bg-blue-600 flex-shrink-0"></span>
+                  Make videos look native to any device
+                </li>
+                <li className="flex items-center gap-2 justify-center">
+                  <span className="w-1.5 h-1.5 rounded-full bg-blue-600 flex-shrink-0"></span>
+                  Simulate iPhone, Samsung & more
+                </li>
+                <li className="flex items-center gap-2 justify-center">
+                  <span className="w-1.5 h-1.5 rounded-full bg-blue-600 flex-shrink-0"></span>
+                  Perfect for content creators
+                </li>
+                <li className="flex items-center gap-2 justify-center">
+                  <span className="w-1.5 h-1.5 rounded-full bg-blue-600 flex-shrink-0"></span>
+                  Authentic look across platforms
+                </li>
+              </ul>
+            </p>
+          </div>
 
+          {/* CTA Buttons */}
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+            <Link 
+              href="/auth/signup" 
+              className="group px-8 py-4 bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-semibold rounded-xl hover:from-blue-700 hover:to-indigo-700 transition-all duration-300 shadow-lg hover:shadow-xl hover:scale-105 transform"
+            >
+              <span className="flex items-center gap-2">
+                Start Masking Videos
+                <svg className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                </svg>
+              </span>
+            </Link>
+            <Link 
+              href="#how-it-works" 
+              className="group px-8 py-4 bg-white text-gray-700 font-semibold rounded-xl hover:bg-gray-50 transition-all duration-300 shadow-lg hover:shadow-xl hover:scale-105 transform border border-gray-100"
+            >
+              How It Works
+            </Link>
+          </div>
+
+          {/* Feature Cards */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto">
+            <div className="bg-white/80 backdrop-blur-sm p-8 rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 border border-gray-100">
+              <div className="text-blue-600 mb-4">
+                <MdPhoneIphone className="w-10 h-10" />
+              </div>
+              <h3 className="text-xl font-semibold mb-3">Device Simulation</h3>
+              <p className="text-gray-600 leading-relaxed">Make your videos appear as if they were recorded from any popular smartphone model.</p>
+            </div>
+            <div className="bg-white/80 backdrop-blur-sm p-8 rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 border border-gray-100">
+              <div className="text-blue-600 mb-4">
+                <BiCustomize className="w-10 h-10" />
+              </div>
+              <h3 className="text-xl font-semibold mb-3">Metadata Masking</h3>
+              <p className="text-gray-600 leading-relaxed">Customize video metadata to match your chosen device specifications perfectly.</p>
+            </div>
+            <div className="bg-white/80 backdrop-blur-sm p-8 rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 border border-gray-100">
+              <div className="text-blue-600 mb-4">
+                <BsLightningChargeFill className="w-10 h-10" />
+              </div>
+              <h3 className="text-xl font-semibold mb-3">Quick Processing</h3>
+              <p className="text-gray-600 leading-relaxed">Fast and efficient processing with support for multiple video formats.</p>
+            </div>
+          </div>
+
+          {/* Upload Area */}
           <div
-            className={`max-w-2xl mx-auto p-8 rounded-2xl border-2 border-dashed transition-colors duration-200 ${
-              isDragging 
-                ? 'border-blue-500 bg-blue-50' 
-                : 'border-gray-300 hover:border-gray-400'
+            className={`max-w-2xl mx-auto p-10 rounded-2xl border-2 border-dashed transition-all duration-300 transform hover:scale-[1.02] cursor-pointer ${
+              isDragging
+                ? 'border-blue-500 bg-blue-50/80 backdrop-blur-sm scale-[1.02]'
+                : 'border-gray-300 hover:border-blue-500 bg-white/80 backdrop-blur-sm'
             }`}
             onDragOver={handleDragOver}
             onDragLeave={handleDragLeave}
             onDrop={handleDrop}
           >
-            <div className="text-center">
-              <div className="w-16 h-16 mx-auto mb-4 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-xl flex items-center justify-center">
-                <svg
-                  className="w-8 h-8 text-white"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3 3m0 0l-3-3m3 3V8"
-                  />
-                </svg>
+            <div className="text-center space-y-4">
+              <div className="text-blue-600">
+                <FiUploadCloud className="w-16 h-16 mx-auto transform transition-transform duration-300 group-hover:scale-110" />
               </div>
-              <h3 className="text-lg font-semibold mb-2">
-                Drop your video here or browse
-              </h3>
-              <p className="text-gray-500 text-sm">
-                Support for MP4, MOV, AVI up to 2GB
-              </p>
-            </div>
-          </div>
-
-          {/* Trust badges */}
-          <div className="mt-8 flex justify-center space-x-6">
-            <div className="flex items-center space-x-2">
-              <img 
-                src="https://upload.wikimedia.org/wikipedia/en/a/a9/TikTok_logo.svg" 
-                alt="TikTok" 
-                className="h-12 w-12 opacity-80 hover:opacity-100 transition-opacity"
-              />
-              <span className="text-gray-600">TikTok</span>
-            </div>
-            <div className="flex items-center space-x-2">
-              <img 
-                src="https://upload.wikimedia.org/wikipedia/commons/9/95/Instagram_logo_2022.svg" 
-                alt="Instagram" 
-                className="h-8 w-8 opacity-80 hover:opacity-100 transition-opacity"
-              />
-              <span className="text-gray-600">Instagram</span>
-            </div>
-            <div className="flex items-center space-x-2">
-              <img 
-                src="https://upload.wikimedia.org/wikipedia/commons/0/09/YouTube_full-color_icon_%282017%29.svg" 
-                alt="YouTube" 
-                className="h-8 w-8 opacity-80 hover:opacity-100 transition-opacity"
-              />
-              <span className="text-gray-600">YouTube</span>
-            </div>
-            <div className="flex items-center space-x-2">
-              <img 
-                src="https://upload.wikimedia.org/wikipedia/commons/6/6f/Logo_of_Twitter.svg" 
-                alt="Twitter" 
-                className="h-8 w-8 opacity-80 hover:opacity-100 transition-opacity"
-              />
-              <span className="text-gray-600">Twitter</span>
+              <div>
+                <h3 className="text-xl font-semibold text-gray-900 mb-2">
+                  {isDragging ? 'Drop your video here' : 'Drag & drop your video'}
+                </h3>
+                <p className="text-gray-500">or click to browse</p>
+                <p className="text-gray-400 text-sm mt-2">Supports MP4, MOV, AVI (up to 2GB)</p>
+              </div>
             </div>
           </div>
         </div>
