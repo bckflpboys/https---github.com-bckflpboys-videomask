@@ -57,34 +57,31 @@ export default function VideoPreview({ file, devicePreset, onConfirm, onCancel }
 
   const getVideoFrameRate = async (video: HTMLVideoElement): Promise<number | undefined> => {
     return new Promise((resolve) => {
-      let frameCount = 0;
-      let lastTime = 0;
-      let frameTimes: number[] = [];
-      
-      const checkFrame = () => {
-        if (!video.paused && !video.ended) {
-          frameCount++;
-          const time = video.currentTime;
-          if (lastTime !== time) {
-            frameTimes.push(1000 / (time - lastTime));
-            lastTime = time;
-            
-            if (frameTimes.length >= 10 || time >= 1) {
-              const avgFrameRate = frameTimes.reduce((a, b) => a + b, 0) / frameTimes.length;
-              video.pause();
-              resolve(Math.round(avgFrameRate));
-              return;
-            }
+      try {
+        const stream = video.captureStream();
+        const track = stream.getVideoTracks()[0];
+        
+        if (track) {
+          const capabilities = track.getCapabilities();
+          const settings = track.getSettings();
+          
+          // Try to get the actual frame rate from the track settings
+          if (settings.frameRate) {
+            resolve(settings.frameRate);
+            return;
           }
-          requestAnimationFrame(checkFrame);
+          
+          // Try to get it from capabilities
+          if (capabilities.frameRate && typeof capabilities.frameRate !== 'object') {
+            resolve(capabilities.frameRate);
+            return;
+          }
         }
-      };
-
-      video.play().then(() => {
-        requestAnimationFrame(checkFrame);
-      }).catch(() => {
         resolve(undefined);
-      });
+      } catch (e) {
+        console.warn('Could not determine frame rate:', e);
+        resolve(undefined);
+      }
     });
   };
 
@@ -109,19 +106,19 @@ export default function VideoPreview({ file, devicePreset, onConfirm, onCancel }
 
         let audioInfo = {};
         try {
-          // Check for captureStream/mozCaptureStream support
-          const captureMethod = video.captureStream || (video as any).mozCaptureStream;
-          if (captureMethod) {
-            const stream = captureMethod.call(video);
-            const audioTrack = stream.getAudioTracks()[0];
-            if (audioTrack && 'getSettings' in audioTrack) {
-              const settings = audioTrack.getSettings();
-              audioInfo = {
-                audioChannels: settings.channelCount || undefined,
-                audioSampleRate: settings.sampleRate || undefined,
-              };
-            }
-          }
+          // Get audio codec from MIME type
+          const mimeCodecs = file.type.split(';')[1]?.match(/codecs="([^"]+)"/)?.[1];
+          const [videoCodec, audioCodec] = mimeCodecs?.split(',').map(codec => codec?.trim()) || [];
+
+          // Get audio track settings
+          const audioContext = new AudioContext();
+          const mediaElement = audioContext.createMediaElementSource(video);
+          audioInfo = {
+            audioCodec: audioCodec || undefined,
+            audioChannels: mediaElement.channelCount || undefined,
+            audioSampleRate: audioContext.sampleRate || undefined,
+          };
+          audioContext.close();
         } catch (e) {
           console.warn('Could not get audio metadata:', e);
         }
@@ -129,7 +126,7 @@ export default function VideoPreview({ file, devicePreset, onConfirm, onCancel }
         const bitrate = file.size * 8 / video.duration;
 
         const mimeCodecs = file.type.split(';')[1]?.match(/codecs="([^"]+)"/)?.[1];
-        const [videoCodec, audioCodec] = mimeCodecs?.split(',') || [];
+        const [videoCodec] = mimeCodecs?.split(',') || [];
 
         const newMetadata: VideoMetadata = {
           fileName: file.name,
@@ -143,7 +140,6 @@ export default function VideoPreview({ file, devicePreset, onConfirm, onCancel }
           frameRate,
           bitrate,
           videoCodec,
-          audioCodec,
           ...audioInfo
         };
 
@@ -286,77 +282,71 @@ export default function VideoPreview({ file, devicePreset, onConfirm, onCancel }
                     <dd className="text-gray-900">{metadata.videoCodec}</dd>
                   </div>
                 )}
+                <div className="mt-4 pt-4 border-t border-gray-300">
+                  <h5 className="font-medium text-gray-900 mb-3">Audio Specifications</h5>
+                  <div className="flex justify-between">
+                    <dt className="text-gray-500">Audio Codec</dt>
+                    <dd className="text-gray-900">{metadata?.audioCodec || 'Not available'}</dd>
+                  </div>
+                  <div className="flex justify-between">
+                    <dt className="text-gray-500">Audio Channels</dt>
+                    <dd className="text-gray-900">
+                      {metadata?.audioChannels ? 
+                        (metadata.audioChannels === 1 ? 'Mono' : 
+                         metadata.audioChannels === 2 ? 'Stereo' : 
+                         `${metadata.audioChannels} channels`) : 
+                        'Not available'}
+                    </dd>
+                  </div>
+                  <div className="flex justify-between">
+                    <dt className="text-gray-500">Sample Rate</dt>
+                    <dd className="text-gray-900">
+                      {metadata?.audioSampleRate ? 
+                        `${(metadata.audioSampleRate / 1000).toFixed(1)} kHz` : 
+                        'Not available'}
+                    </dd>
+                  </div>
+                </div>
               </dl>
             </div>
 
-            {/* Audio Specifications */}
-            {(metadata?.audioCodec || metadata?.audioChannels || metadata?.audioSampleRate) && (
+            {/* Target Device Information */}
+            {devicePreset && (
               <div className="p-4 bg-gray-50 rounded-lg border-2 border-gray-400">
-                <h4 className="font-medium text-gray-900 mb-4">Audio Specifications</h4>
-                <dl className="space-y-2">
-                  {metadata?.audioCodec && (
-                    <div className="flex justify-between">
-                      <dt className="text-gray-500">Audio Codec</dt>
-                      <dd className="text-gray-900">{metadata.audioCodec}</dd>
-                    </div>
-                  )}
-                  {metadata?.audioChannels && (
-                    <div className="flex justify-between">
-                      <dt className="text-gray-500">Audio Channels</dt>
-                      <dd className="text-gray-900">
-                        {metadata.audioChannels === 1 ? 'Mono' : 
-                         metadata.audioChannels === 2 ? 'Stereo' : 
-                         `${metadata.audioChannels} channels`}
-                      </dd>
-                    </div>
-                  )}
-                  {metadata?.audioSampleRate && (
-                    <div className="flex justify-between">
-                      <dt className="text-gray-500">Sample Rate</dt>
-                      <dd className="text-gray-900">{(metadata.audioSampleRate / 1000).toFixed(1)} kHz</dd>
-                    </div>
-                  )}
+                <h4 className="font-medium text-gray-900 mb-4">Target Device Settings</h4>
+                <dl className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="flex justify-between">
+                    <dt className="text-gray-500">Device</dt>
+                    <dd className="text-gray-900">{devicePreset.name}</dd>
+                  </div>
+                  <div className="flex justify-between">
+                    <dt className="text-gray-500">Target Resolution</dt>
+                    <dd className="text-gray-900">{devicePreset.resolution}</dd>
+                  </div>
+                  <div className="flex justify-between">
+                    <dt className="text-gray-500">Target Frame Rate</dt>
+                    <dd className="text-gray-900">{devicePreset.frameRate} fps</dd>
+                  </div>
                 </dl>
               </div>
             )}
           </div>
 
-          {/* Target Device Information */}
-          {devicePreset && (
-            <div className="p-4 bg-gray-50 rounded-lg border-2 border-gray-400">
-              <h4 className="font-medium text-gray-900 mb-4">Target Device Settings</h4>
-              <dl className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="flex justify-between">
-                  <dt className="text-gray-500">Device</dt>
-                  <dd className="text-gray-900">{devicePreset.name}</dd>
-                </div>
-                <div className="flex justify-between">
-                  <dt className="text-gray-500">Target Resolution</dt>
-                  <dd className="text-gray-900">{devicePreset.resolution}</dd>
-                </div>
-                <div className="flex justify-between">
-                  <dt className="text-gray-500">Target Frame Rate</dt>
-                  <dd className="text-gray-900">{devicePreset.frameRate} fps</dd>
-                </div>
-              </dl>
-            </div>
-          )}
-        </div>
-
-        {/* Action Buttons */}
-        <div className="px-6 py-4 bg-gray-50 border-t-2 border-gray-400 flex justify-end space-x-4 rounded-b-xl">
-          <button
-            onClick={handleCancel}
-            className="px-4 py-2 text-gray-700 hover:text-gray-900 font-medium border-2 border-gray-400 rounded-lg hover:bg-gray-100"
-          >
-            Cancel
-          </button>
-          <button
-            onClick={onConfirm}
-            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium border-2 border-blue-700"
-          >
-            Proceed with Upload
-          </button>
+          {/* Action Buttons */}
+          <div className="px-6 py-4 bg-gray-50 border-t-2 border-gray-400 flex justify-end space-x-4 rounded-b-xl">
+            <button
+              onClick={handleCancel}
+              className="px-4 py-2 text-gray-700 hover:text-gray-900 font-medium border-2 border-gray-400 rounded-lg hover:bg-gray-100"
+            >
+              Cancel
+            </button>
+            <button
+              onClick={onConfirm}
+              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium border-2 border-blue-700"
+            >
+              Proceed with Upload
+            </button>
+          </div>
         </div>
       </div>
     </div>
