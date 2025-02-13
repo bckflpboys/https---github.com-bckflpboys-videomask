@@ -107,10 +107,10 @@ export default function UploadPage() {
 
             {isUploading && (
               <div className="fixed inset-0 bg-black/50 flex items-center justify-center">
-                <div className="bg-white p-8 rounded-xl max-w-md w-full mx-4">
+                <div className="bg-white p-8 rounded-xl max-w-md w-full mx-4 border-2 border-gray-400 shadow-lg">
                   <div className="space-y-4">
                     <h3 className="text-xl font-semibold text-gray-900">Uploading Video...</h3>
-                    <div className="h-2 bg-blue-100 rounded-full overflow-hidden">
+                    <div className="h-2 bg-blue-100 rounded-full overflow-hidden border border-blue-400">
                       <div 
                         className="h-full bg-blue-500 transition-all duration-300"
                         style={{ width: `${uploadProgress}%` }}
@@ -123,7 +123,7 @@ export default function UploadPage() {
             )}
 
             {/* Video Preview or Upload Area */}
-            <div className="mb-16">
+            <div className="mb-16 p-8 bg-white rounded-xl border-2 border-gray-400 shadow-lg">
               {showPreview ? (
                 <VideoPreview
                   file={selectedFile}
@@ -136,7 +136,7 @@ export default function UploadPage() {
                   className={`max-w-3xl mx-auto p-12 rounded-2xl border-2 border-dashed transition-all duration-300 ${
                     isDragging
                       ? 'border-blue-500 bg-blue-50 scale-[1.02]'
-                      : 'border-blue-300 hover:border-blue-500 bg-white/80'
+                      : 'border-blue-400 hover:border-blue-500 bg-white/80'
                   }`}
                   onDragOver={handleDragOver}
                   onDragLeave={handleDragLeave}
@@ -174,21 +174,22 @@ export default function UploadPage() {
             </div>
 
             {/* Device Preset Section */}
-            <div>
+            <div className="p-8 bg-white rounded-xl border-2 border-gray-400 shadow-lg">
               <h2 className="text-2xl font-bold text-gray-900 mb-6">Choose Device Preset</h2>
               <p className="text-lg text-gray-600 mb-8">Select a device to optimize your video for the best viewing experience</p>
               
               {/* Device Category Selection */}
-              <div className="mb-8">
+              <div className="mb-8 p-6 bg-gray-50 rounded-xl border-2 border-gray-400">
+                <h3 className="text-lg font-semibold text-gray-900 mb-4">Device Category</h3>
                 <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
                   {categories.map(({ id, name, icon: Icon }) => (
                     <button
                       key={id}
                       onClick={() => setSelectedCategory(id as DevicePreset['category'])}
-                      className={`p-4 rounded-xl border-2 transition-all duration-300 ${
+                      className={`p-4 rounded-xl border-2 transition-all duration-300 bg-white ${
                         selectedCategory === id
                           ? 'border-blue-500 bg-blue-50'
-                          : 'border-gray-200 hover:border-blue-300'
+                          : 'border-gray-400 hover:border-blue-500'
                       }`}
                     >
                       <Icon className="w-8 h-8 mx-auto mb-2 text-blue-600" />
@@ -199,17 +200,17 @@ export default function UploadPage() {
               </div>
 
               {/* Device Presets */}
-              <div className="mb-12">
-                <h2 className="text-xl font-semibold text-gray-900 mb-4">Select Device Model</h2>
+              <div className="p-6 bg-gray-50 rounded-xl border-2 border-gray-400">
+                <h3 className="text-lg font-semibold text-gray-900 mb-4">Device Model</h3>
                 <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                   {presets.map(preset => (
                     <button
                       key={preset.id}
                       onClick={() => setSelectedPreset(preset)}
-                      className={`p-6 rounded-xl border-2 transition-all duration-300 text-left ${
+                      className={`p-6 rounded-xl border-2 transition-all duration-300 text-left bg-white ${
                         selectedPreset?.id === preset.id
                           ? 'border-blue-500 bg-blue-50'
-                          : 'border-gray-200 hover:border-blue-300'
+                          : 'border-gray-400 hover:border-blue-500'
                       }`}
                     >
                       <h3 className="font-medium text-gray-900 mb-2">{preset.name}</h3>

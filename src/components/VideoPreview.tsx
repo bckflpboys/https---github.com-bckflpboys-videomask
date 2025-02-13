@@ -103,7 +103,7 @@ export default function VideoPreview({ file, devicePreset, onConfirm, onCancel }
   return (
     <div className="space-y-8">
       {/* Video Preview */}
-      <div className="relative aspect-video max-w-3xl mx-auto bg-black rounded-xl overflow-hidden">
+      <div className="relative aspect-video max-w-3xl mx-auto bg-black rounded-xl overflow-hidden border-2 border-gray-400">
         <video
           ref={videoRef}
           src={videoUrl}
@@ -118,14 +118,14 @@ export default function VideoPreview({ file, devicePreset, onConfirm, onCancel }
       </div>
 
       {/* Metadata Display */}
-      <div className="max-w-3xl mx-auto bg-white rounded-xl shadow-sm border border-gray-200">
-        <div className="p-6">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">Video Information</h3>
+      <div className="max-w-3xl mx-auto bg-white rounded-xl shadow-lg border-2 border-gray-400">
+        <div className="p-6 space-y-6">
+          <h3 className="text-lg font-semibold text-gray-900">Video Information</h3>
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* File Information */}
-            <div className="space-y-4">
-              <h4 className="font-medium text-gray-900">File Details</h4>
+            <div className="p-4 bg-gray-50 rounded-lg border-2 border-gray-400">
+              <h4 className="font-medium text-gray-900 mb-4">File Details</h4>
               <dl className="space-y-2">
                 <div className="flex justify-between">
                   <dt className="text-gray-500">Name</dt>
@@ -147,8 +147,8 @@ export default function VideoPreview({ file, devicePreset, onConfirm, onCancel }
             </div>
 
             {/* Video Specifications */}
-            <div className="space-y-4">
-              <h4 className="font-medium text-gray-900">Video Specifications</h4>
+            <div className="p-4 bg-gray-50 rounded-lg border-2 border-gray-400">
+              <h4 className="font-medium text-gray-900 mb-4">Video Specifications</h4>
               <dl className="space-y-2">
                 <div className="flex justify-between">
                   <dt className="text-gray-500">Duration</dt>
@@ -174,7 +174,7 @@ export default function VideoPreview({ file, devicePreset, onConfirm, onCancel }
 
           {/* Target Device Information */}
           {devicePreset && (
-            <div className="mt-6 pt-6 border-t border-gray-200">
+            <div className="p-4 bg-gray-50 rounded-lg border-2 border-gray-400">
               <h4 className="font-medium text-gray-900 mb-4">Target Device Settings</h4>
               <dl className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="flex justify-between">
@@ -195,16 +195,16 @@ export default function VideoPreview({ file, devicePreset, onConfirm, onCancel }
         </div>
 
         {/* Action Buttons */}
-        <div className="px-6 py-4 bg-gray-50 border-t border-gray-200 flex justify-end space-x-4">
+        <div className="px-6 py-4 bg-gray-50 border-t-2 border-gray-400 flex justify-end space-x-4 rounded-b-xl">
           <button
             onClick={handleCancel}
-            className="px-4 py-2 text-gray-700 hover:text-gray-900 font-medium"
+            className="px-4 py-2 text-gray-700 hover:text-gray-900 font-medium border-2 border-gray-400 rounded-lg hover:bg-gray-100"
           >
             Cancel
           </button>
           <button
             onClick={onConfirm}
-            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium"
+            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium border-2 border-blue-700"
           >
             Proceed with Upload
           </button>
