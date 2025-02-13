@@ -78,55 +78,59 @@ export default function Pricing() {
           {plans.map((plan, index) => (
             <div
               key={plan.name}
-              className={`relative bg-white rounded-2xl shadow-lg overflow-hidden ${
-                plan.popular ? 'ring-2 ring-blue-500' : ''
-              }`}
+              className={`relative bg-white rounded-2xl shadow-lg ${
+                plan.popular ? 'ring-2 ring-blue-500' : 'ring-[1.5px] ring-gray-300'
+              } transition-all duration-300 hover:shadow-xl before:absolute before:inset-0 before:-z-10 before:rounded-2xl before:bg-gradient-to-r before:from-gray-100 before:via-white before:to-gray-100 before:opacity-0 hover:before:opacity-100 before:transition-opacity`}
             >
               {plan.popular && (
-                <div className="absolute top-0 right-0 -translate-y-1/2 translate-x-1/2">
-                  <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-semibold bg-gradient-to-r from-blue-500 to-indigo-500 text-white shadow-lg">
+                <div className="absolute -top-4 left-5">
+                  <span className="inline-flex items-center px-4 py-1.5 rounded-full text-sm font-semibold bg-gradient-to-r from-blue-500 to-indigo-500 text-white shadow-md">
                     Popular
                   </span>
                 </div>
               )}
-              <div className="p-8">
-                <h3 className="text-2xl font-bold mb-2">{plan.name}</h3>
-                <div className="flex items-baseline mb-8">
-                  <span className="text-4xl font-bold">{plan.price}</span>
-                  {plan.period && (
-                    <span className="text-gray-500 ml-1">{plan.period}</span>
-                  )}
+              <div className="p-8 h-full flex flex-col">
+                <div>
+                  <h3 className="text-2xl font-bold mb-2">{plan.name}</h3>
+                  <div className="flex items-baseline mb-8">
+                    <span className="text-4xl font-bold">{plan.price}</span>
+                    {plan.period && (
+                      <span className="text-gray-500 ml-1">{plan.period}</span>
+                    )}
+                  </div>
+                  <ul className="space-y-4 mb-8">
+                    {plan.features.map((feature) => (
+                      <li key={feature.id} className="flex items-center text-gray-600">
+                        <svg
+                          className="w-5 h-5 text-green-500 mr-3 flex-shrink-0"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M5 13l4 4L19 7"
+                          />
+                        </svg>
+                        {feature.text}
+                      </li>
+                    ))}
+                  </ul>
                 </div>
-                <ul className="space-y-4 mb-8">
-                  {plan.features.map((feature) => (
-                    <li key={feature.id} className="flex items-center text-gray-600">
-                      <svg
-                        className="w-5 h-5 text-green-500 mr-3 flex-shrink-0"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M5 13l4 4L19 7"
-                        />
-                      </svg>
-                      {feature.text}
-                    </li>
-                  ))}
-                </ul>
-                <Link
-                  href="#"
-                  className={`block w-full py-3 px-6 text-center rounded-lg font-semibold transition-all duration-200 ${
-                    plan.popular
-                      ? 'bg-gradient-to-r from-blue-500 to-indigo-500 text-white hover:from-blue-600 hover:to-indigo-600 shadow-lg hover:shadow-xl'
-                      : 'bg-gray-100 text-gray-900 hover:bg-gray-200'
-                  }`}
-                >
-                  {plan.cta}
-                </Link>
+                <div className="mt-auto">
+                  <Link
+                    href="#"
+                    className={`block w-full py-3 px-6 text-center rounded-lg font-semibold transition-all duration-200 ${
+                      plan.popular
+                        ? 'bg-gradient-to-r from-blue-500 to-indigo-500 text-white hover:from-blue-600 hover:to-indigo-600 shadow-lg hover:shadow-xl'
+                        : 'bg-gradient-to-r from-gray-100 to-gray-200 text-gray-700 hover:from-gray-200 hover:to-gray-300 border border-gray-300 shadow-sm hover:shadow-md'
+                    }`}
+                  >
+                    {plan.cta}
+                  </Link>
+                </div>
               </div>
             </div>
           ))}
