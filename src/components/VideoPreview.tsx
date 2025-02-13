@@ -17,6 +17,11 @@ export default function VideoPreview({ file, devicePreset, onConfirm, onCancel }
   const [loading, setLoading] = useState(true);
   const videoRef = useRef<HTMLVideoElement>(null);
 
+  const formatDuration = (seconds: number) => {
+    const minutes = (seconds / 60).toFixed(2);
+    return `${seconds.toFixed(2)}s (${minutes} min)`;
+  };
+
   useEffect(() => {
     let objectUrl = '';
     
@@ -127,9 +132,9 @@ export default function VideoPreview({ file, devicePreset, onConfirm, onCancel }
             <div className="p-4 bg-gray-50 rounded-lg border-2 border-gray-400">
               <h4 className="font-medium text-gray-900 mb-4">File Details</h4>
               <dl className="space-y-2">
-                <div className="flex justify-between">
-                  <dt className="text-gray-500">Name</dt>
-                  <dd className="text-gray-900">{metadata.fileName}</dd>
+                <div className="flex justify-between items-start gap-4">
+                  <dt className="text-gray-500 shrink-0">Name</dt>
+                  <dd className="text-gray-900 text-right break-all">{metadata.fileName}</dd>
                 </div>
                 <div className="flex justify-between">
                   <dt className="text-gray-500">Size</dt>
@@ -152,7 +157,7 @@ export default function VideoPreview({ file, devicePreset, onConfirm, onCancel }
               <dl className="space-y-2">
                 <div className="flex justify-between">
                   <dt className="text-gray-500">Duration</dt>
-                  <dd className="text-gray-900">{metadata.duration.toFixed(2)}s</dd>
+                  <dd className="text-gray-900">{formatDuration(metadata.duration)}</dd>
                 </div>
                 <div className="flex justify-between">
                   <dt className="text-gray-500">Resolution</dt>
