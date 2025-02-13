@@ -2,9 +2,11 @@
 
 import Link from 'next/link';
 import { useState } from 'react';
+import { useSession, signOut } from 'next-auth/react';
 
 export default function Navbar() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const { data: session } = useSession();
 
   return (
     <div className="fixed w-full z-50 bg-white/80 backdrop-blur-md border-b border-gray-300 shadow-sm">
@@ -26,9 +28,18 @@ export default function Navbar() {
             <Link href="#features" className="text-gray-700 hover:text-blue-600 font-medium">Features</Link>
             <Link href="#pricing" className="text-gray-700 hover:text-blue-600 font-medium">Pricing</Link>
             <Link href="#upload" className="text-gray-700 hover:text-blue-600 font-medium">Upload</Link>
-            <button className="btn-primary">
-              Sign In
-            </button>
+            {session ? (
+              <button 
+                onClick={() => signOut({ callbackUrl: '/' })}
+                className="btn-primary"
+              >
+                Sign Out
+              </button>
+            ) : (
+              <Link href="/auth/signin" className="btn-primary">
+                Sign In
+              </Link>
+            )}
           </div>
 
           {/* Mobile Menu Button */}
@@ -72,9 +83,18 @@ export default function Navbar() {
               Upload
             </Link>
             <div className="pt-4 pb-2">
-              <button className="w-full btn-primary">
-                Sign In
-              </button>
+              {session ? (
+                <button 
+                  onClick={() => signOut({ callbackUrl: '/' })}
+                  className="w-full btn-primary"
+                >
+                  Sign Out
+                </button>
+              ) : (
+                <Link href="/auth/signin" className="w-full btn-primary block text-center">
+                  Sign In
+                </Link>
+              )}
             </div>
           </div>
         </div>

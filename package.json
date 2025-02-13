@@ -9,7 +9,10 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@auth/mongodb-adapter": "^3.7.4",
     "@heroicons/react": "^2.0.18",
+    "@types/bcryptjs": "^2.4.6",
+    "bcryptjs": "^2.4.3",
     "cloudinary": "^1.41.0",
     "clsx": "^2.0.0",
     "framer-motion": "^10.16.4",
