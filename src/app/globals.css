@@ -10,7 +10,7 @@
 
 @layer base {
   * {
-    @apply border-border;
+    @apply border-[hsl(var(--border))];
   }
   html {
     @apply h-full;
@@ -35,5 +35,16 @@
   .card {
     @apply bg-white rounded-xl shadow-lg hover:shadow-xl transition-shadow 
     duration-300 border border-gray-100;
+  }
+}
+
+@layer utilities {
+  .bg-background {
+    /* Add your custom styles here */
+    background-color: #f0f0f0; /* Example color */
+  }
+  .text-foreground {
+    /* Add your custom styles here */
+    color: #333333; /* Example color */
   }
 }
