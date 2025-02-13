@@ -102,13 +102,82 @@ export default function UploadPage() {
       <Navbar />
       <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white py-12 pt-24 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
-          {!showPreview ? (
-            <>
-              <div className="text-center mb-12">
-                <h1 className="text-4xl font-bold text-gray-900 mb-4">Upload Your Video</h1>
-                <p className="text-lg text-gray-600">Choose a device preset and upload your video to make it look native</p>
-              </div>
+          <div className="container mx-auto px-4 py-8">
+            <h1 className="text-2xl font-bold text-gray-900 mb-8">Upload Video</h1>
 
+            {isUploading && (
+              <div className="fixed inset-0 bg-black/50 flex items-center justify-center">
+                <div className="bg-white p-8 rounded-xl max-w-md w-full mx-4">
+                  <div className="space-y-4">
+                    <h3 className="text-xl font-semibold text-gray-900">Uploading Video...</h3>
+                    <div className="h-2 bg-blue-100 rounded-full overflow-hidden">
+                      <div 
+                        className="h-full bg-blue-500 transition-all duration-300"
+                        style={{ width: `${uploadProgress}%` }}
+                      />
+                    </div>
+                    <p className="text-sm text-blue-600">Progress: {uploadProgress}%</p>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Video Preview or Upload Area */}
+            <div className="mb-16">
+              {showPreview ? (
+                <VideoPreview
+                  file={selectedFile}
+                  devicePreset={selectedPreset || undefined}
+                  onConfirm={handleUploadConfirm}
+                  onCancel={handlePreviewCancel}
+                />
+              ) : (
+                <div
+                  className={`max-w-3xl mx-auto p-12 rounded-2xl border-2 border-dashed transition-all duration-300 ${
+                    isDragging
+                      ? 'border-blue-500 bg-blue-50 scale-[1.02]'
+                      : 'border-blue-300 hover:border-blue-500 bg-white/80'
+                  }`}
+                  onDragOver={handleDragOver}
+                  onDragLeave={handleDragLeave}
+                  onDrop={handleDrop}
+                  onClick={() => document.getElementById('file-upload')?.click()}
+                >
+                  <input
+                    type="file"
+                    id="file-upload"
+                    className="hidden"
+                    accept="video/*"
+                    onChange={handleFileSelect}
+                  />
+                  <div className="text-center space-y-4">
+                    <div className="text-blue-600">
+                      <FiUploadCloud className="w-16 h-16 mx-auto" />
+                    </div>
+                    <div>
+                      <h3 className="text-xl font-semibold text-gray-900 mb-2">
+                        {isDragging ? 'Drop your video here' : selectedPreset 
+                          ? `Upload video for ${selectedPreset.name}`
+                          : 'Upload your video'}
+                      </h3>
+                      <p className="text-gray-500">or click to browse</p>
+                      <p className="text-gray-400 text-sm mt-2">Supports MP4, MOV, AVI (up to 2GB)</p>
+                      {!selectedPreset && (
+                        <p className="text-blue-600 text-sm mt-2">
+                          Tip: Select a device preset below for optimized video settings
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Device Preset Section */}
+            <div>
+              <h2 className="text-2xl font-bold text-gray-900 mb-6">Choose Device Preset</h2>
+              <p className="text-lg text-gray-600 mb-8">Select a device to optimize your video for the best viewing experience</p>
+              
               {/* Device Category Selection */}
               <div className="mb-8">
                 <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
@@ -152,74 +221,8 @@ export default function UploadPage() {
                   ))}
                 </div>
               </div>
-
-              {/* Upload Area */}
-              <div
-                className={`max-w-3xl mx-auto p-12 rounded-2xl border-2 border-dashed transition-all duration-300 ${
-                  isDragging
-                    ? 'border-blue-500 bg-blue-50 scale-[1.02]'
-                    : 'border-blue-300 hover:border-blue-500 bg-white/80'
-                }`}
-                onDragOver={handleDragOver}
-                onDragLeave={handleDragLeave}
-                onDrop={handleDrop}
-                onClick={() => document.getElementById('file-upload')?.click()}
-              >
-                <input
-                  type="file"
-                  id="file-upload"
-                  className="hidden"
-                  accept="video/*"
-                  onChange={handleFileSelect}
-                />
-                <div className="text-center space-y-4">
-                  <div className="text-blue-600">
-                    <FiUploadCloud className="w-16 h-16 mx-auto" />
-                  </div>
-                  <div>
-                    <h3 className="text-xl font-semibold text-gray-900 mb-2">
-                      {isDragging ? 'Drop your video here' : selectedPreset 
-                        ? `Upload video for ${selectedPreset.name}`
-                        : 'Upload your video'}
-                    </h3>
-                    <p className="text-gray-500">or click to browse</p>
-                    <p className="text-gray-400 text-sm mt-2">Supports MP4, MOV, AVI (up to 2GB)</p>
-                    {!selectedPreset && (
-                      <p className="text-blue-600 text-sm mt-2">
-                        Tip: Select a device preset above for optimized video settings
-                      </p>
-                    )}
-                  </div>
-                </div>
-              </div>
-            </>
-          ) : (
-            selectedFile && (
-              <VideoPreview
-                file={selectedFile}
-                devicePreset={selectedPreset || undefined}
-                onConfirm={handleUploadConfirm}
-                onCancel={handlePreviewCancel}
-              />
-            )
-          )}
-
-          {isUploading && (
-            <div className="fixed inset-0 bg-black/50 flex items-center justify-center">
-              <div className="bg-white p-8 rounded-xl max-w-md w-full mx-4">
-                <div className="space-y-4">
-                  <h3 className="text-xl font-semibold text-gray-900">Uploading Video...</h3>
-                  <div className="h-2 bg-blue-100 rounded-full overflow-hidden">
-                    <div 
-                      className="h-full bg-blue-500 transition-all duration-300"
-                      style={{ width: `${uploadProgress}%` }}
-                    />
-                  </div>
-                  <p className="text-sm text-blue-600">Progress: {uploadProgress}%</p>
-                </div>
-              </div>
             </div>
-          )}
+          </div>
         </div>
       </div>
     </>
