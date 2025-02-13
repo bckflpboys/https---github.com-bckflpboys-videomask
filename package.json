@@ -10,6 +10,8 @@
   },
   "dependencies": {
     "@auth/mongodb-adapter": "^3.7.4",
+    "@cloudinary/react": "^1.13.1",
+    "@cloudinary/url-gen": "^1.21.0",
     "@heroicons/react": "^2.0.18",
     "@types/bcryptjs": "^2.4.6",
     "bcryptjs": "^2.4.3",
@@ -20,6 +22,7 @@
     "mongoose": "^8.0.3",
     "next": "14.0.4",
     "next-auth": "^4.24.5",
+    "next-cloudinary": "^6.16.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-icons": "^5.4.0",

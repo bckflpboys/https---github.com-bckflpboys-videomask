@@ -53,13 +53,13 @@ export default function Benefits() {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {benefits.map((benefit, index) => (
             <div
               key={index}
-              className="bg-white rounded-2xl p-8 shadow-lg hover:shadow-xl transition-shadow duration-200"
+              className="bg-white/90 backdrop-blur-sm p-8 rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 border-2 border-blue-200 hover:border-blue-400 bg-gradient-to-br from-white via-blue-50/50 to-blue-100/30"
             >
-              <div className="text-4xl mb-4">{benefit.icon}</div>
+              <div className="text-blue-600 mb-4">{benefit.icon}</div>
               <h3 className="text-xl font-semibold text-gray-900 mb-3">
                 {benefit.title}
               </h3>

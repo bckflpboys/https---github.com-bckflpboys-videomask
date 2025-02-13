@@ -27,7 +27,7 @@ export default function Navbar() {
           <div className="hidden md:flex items-center space-x-8">
             <Link href="#features" className="text-gray-700 hover:text-blue-600 font-medium">Features</Link>
             <Link href="#pricing" className="text-gray-700 hover:text-blue-600 font-medium">Pricing</Link>
-            <Link href="#upload" className="text-gray-700 hover:text-blue-600 font-medium">Upload</Link>
+            <Link href="/upload" className="text-gray-700 hover:text-blue-600 font-medium">Upload</Link>
             {session ? (
               <button 
                 onClick={() => signOut({ callbackUrl: '/' })}
@@ -77,7 +77,7 @@ export default function Navbar() {
               Pricing
             </Link>
             <Link
-              href="#upload"
+              href="/upload"
               className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-blue-600 hover:bg-gray-50"
             >
               Upload
