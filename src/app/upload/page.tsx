@@ -66,7 +66,7 @@ export default function UploadPage() {
   };
 
   const handleUploadConfirm = async () => {
-    if (!selectedFile || !selectedPreset) return;
+    if (!selectedFile) return;
     
     setShowPreview(false);
     setIsUploading(true);
@@ -159,11 +159,11 @@ export default function UploadPage() {
                   isDragging
                     ? 'border-blue-500 bg-blue-50 scale-[1.02]'
                     : 'border-blue-300 hover:border-blue-500 bg-white/80'
-                } ${!selectedPreset ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
+                }`}
                 onDragOver={handleDragOver}
                 onDragLeave={handleDragLeave}
                 onDrop={handleDrop}
-                onClick={() => selectedPreset && document.getElementById('file-upload')?.click()}
+                onClick={() => document.getElementById('file-upload')?.click()}
               >
                 <input
                   type="file"
@@ -171,35 +171,33 @@ export default function UploadPage() {
                   className="hidden"
                   accept="video/*"
                   onChange={handleFileSelect}
-                  disabled={!selectedPreset}
                 />
                 <div className="text-center space-y-4">
                   <div className="text-blue-600">
                     <FiUploadCloud className="w-16 h-16 mx-auto" />
                   </div>
                   <div>
-                    {selectedPreset ? (
-                      <>
-                        <h3 className="text-xl font-semibold text-gray-900 mb-2">
-                          {isDragging ? 'Drop your video here' : 'Upload video for ' + selectedPreset.name}
-                        </h3>
-                        <p className="text-gray-500">or click to browse</p>
-                      </>
-                    ) : (
-                      <h3 className="text-xl font-semibold text-gray-900 mb-2">
-                        Please select a device preset first
-                      </h3>
-                    )}
+                    <h3 className="text-xl font-semibold text-gray-900 mb-2">
+                      {isDragging ? 'Drop your video here' : selectedPreset 
+                        ? `Upload video for ${selectedPreset.name}`
+                        : 'Upload your video'}
+                    </h3>
+                    <p className="text-gray-500">or click to browse</p>
                     <p className="text-gray-400 text-sm mt-2">Supports MP4, MOV, AVI (up to 2GB)</p>
+                    {!selectedPreset && (
+                      <p className="text-blue-600 text-sm mt-2">
+                        Tip: Select a device preset above for optimized video settings
+                      </p>
+                    )}
                   </div>
                 </div>
               </div>
             </>
           ) : (
-            selectedFile && selectedPreset && (
+            selectedFile && (
               <VideoPreview
                 file={selectedFile}
-                devicePreset={selectedPreset}
+                devicePreset={selectedPreset || undefined}
                 onConfirm={handleUploadConfirm}
                 onCancel={handlePreviewCancel}
               />

@@ -32,6 +32,7 @@ export const getVideoMetadata = async (file: File): Promise<VideoMetadata> => {
   return new Promise((resolve) => {
     const video = document.createElement('video');
     video.preload = 'metadata';
+    video.muted = true; // Mute the temporary video element
     
     // Create object URL for the file
     const objectUrl = URL.createObjectURL(file);
