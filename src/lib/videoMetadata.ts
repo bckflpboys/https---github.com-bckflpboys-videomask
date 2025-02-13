@@ -11,11 +11,11 @@ interface VideoMetadata {
   height: number;
   aspectRatio: number;
   frameRate?: number;
+  bitrate?: number;
   
   // Additional info
   videoCodec?: string;
   audioCodec?: string;
-  bitrate?: number;
   audioChannels?: number;
   audioSampleRate?: number;
 }
@@ -28,19 +28,75 @@ export const formatFileSize = (bytes: number): string => {
   return `${parseFloat((bytes / Math.pow(k, i)).toFixed(2))} ${sizes[i]}`;
 };
 
+export const getVideoFrameRate = async (video: HTMLVideoElement): Promise<number | undefined> => {
+  return new Promise((resolve) => {
+    let frameCount = 0;
+    let lastTime = 0;
+    let frameTimes: number[] = [];
+    
+    const checkFrame = () => {
+      if (!video.paused && !video.ended) {
+        frameCount++;
+        const time = video.currentTime;
+        if (lastTime !== time) {
+          frameTimes.push(1000 / (time - lastTime));
+          lastTime = time;
+          
+          // After collecting enough samples or reaching 1 second
+          if (frameTimes.length >= 10 || time >= 1) {
+            const avgFrameRate = frameTimes.reduce((a, b) => a + b, 0) / frameTimes.length;
+            video.pause();
+            resolve(Math.round(avgFrameRate));
+            return;
+          }
+        }
+        requestAnimationFrame(checkFrame);
+      }
+    };
+
+    video.play().then(() => {
+      requestAnimationFrame(checkFrame);
+    }).catch(() => {
+      // If we can't play the video, try to get frame rate from video type
+      const fpsMatch = video.type?.match(/fps=(\d+)/);
+      resolve(fpsMatch ? parseInt(fpsMatch[1]) : undefined);
+    });
+  });
+};
+
 export const getVideoMetadata = async (file: File): Promise<VideoMetadata> => {
   return new Promise((resolve) => {
     const video = document.createElement('video');
     video.preload = 'metadata';
-    video.muted = true; // Mute the temporary video element
+    video.muted = true;
     
-    // Create object URL for the file
     const objectUrl = URL.createObjectURL(file);
     
-    video.onloadedmetadata = () => {
-      // Revoke the object URL to free up memory
+    video.onloadedmetadata = async () => {
       URL.revokeObjectURL(objectUrl);
       
+      // Get frame rate
+      const frameRate = await getVideoFrameRate(video);
+      
+      // Try to get audio context info
+      let audioInfo = {};
+      try {
+        const audioContext = new AudioContext();
+        const audioTrack = video.captureStream().getAudioTracks()[0];
+        if (audioTrack) {
+          const settings = audioTrack.getSettings();
+          audioInfo = {
+            audioChannels: settings.channelCount || undefined,
+            audioSampleRate: settings.sampleRate || undefined,
+          };
+        }
+      } catch (e) {
+        console.warn('Could not get audio metadata:', e);
+      }
+
+      // Estimate bitrate from file size and duration
+      const bitrate = file.size * 8 / video.duration; // bits per second
+
       const metadata: VideoMetadata = {
         // Basic file info
         fileName: file.name,
@@ -53,47 +109,21 @@ export const getVideoMetadata = async (file: File): Promise<VideoMetadata> => {
         width: video.videoWidth,
         height: video.videoHeight,
         aspectRatio: video.videoWidth / video.videoHeight,
+        frameRate,
+        bitrate,
+        
+        // Try to get codec info from the file type
+        videoCodec: file.type.split('codecs=')[1]?.split(',')[0]?.replace(/"/g, '') || undefined,
+        audioCodec: file.type.split('codecs=')[1]?.split(',')[1]?.replace(/"/g, '') || undefined,
+        
+        // Audio specs
+        ...audioInfo
       };
       
       resolve(metadata);
     };
     
-    video.onerror = () => {
-      URL.revokeObjectURL(objectUrl);
-      throw new Error('Error loading video metadata');
-    };
-    
     video.src = objectUrl;
-  });
-};
-
-// Additional utility functions for metadata extraction
-export const getVideoFrameRate = async (videoElement: HTMLVideoElement): Promise<number> => {
-  return new Promise((resolve) => {
-    let frames = 0;
-    let startTime: number;
-    
-    const countFrames = () => {
-      frames++;
-    };
-    
-    videoElement.requestVideoFrameCallback(function callback(now) {
-      if (!startTime) startTime = now;
-      else if (now - startTime > 1000) {
-        videoElement.removeEventListener('play', startPlayback);
-        resolve(frames);
-        return;
-      }
-      countFrames();
-      videoElement.requestVideoFrameCallback(callback);
-    });
-    
-    const startPlayback = () => {
-      videoElement.currentTime = 0;
-    };
-    
-    videoElement.addEventListener('play', startPlayback);
-    videoElement.play();
   });
 };
 

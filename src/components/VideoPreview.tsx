@@ -1,8 +1,25 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import { getVideoMetadata, getVideoFrameRate } from '@/lib/videoMetadata';
+import { getVideoMetadata, formatFileSize } from '@/lib/videoMetadata';
 import type { DevicePreset } from '@/lib/devicePresets';
+
+interface VideoMetadata {
+  fileName: string;
+  fileSize: string;
+  fileType: string;
+  lastModified: string;
+  duration: number;
+  width: number;
+  height: number;
+  aspectRatio: number;
+  frameRate?: number;
+  bitrate?: number;
+  videoCodec?: string;
+  audioCodec?: string;
+  audioChannels?: number;
+  audioSampleRate?: number;
+}
 
 interface VideoPreviewProps {
   file: File;
@@ -11,9 +28,15 @@ interface VideoPreviewProps {
   onCancel: () => void;
 }
 
+declare global {
+  interface HTMLVideoElement {
+    captureStream(): MediaStream;
+  }
+}
+
 export default function VideoPreview({ file, devicePreset, onConfirm, onCancel }: VideoPreviewProps) {
   const [videoUrl, setVideoUrl] = useState<string>('');
-  const [metadata, setMetadata] = useState<any>(null);
+  const [metadata, setMetadata] = useState<VideoMetadata | null>(null);
   const [loading, setLoading] = useState(true);
   const videoRef = useRef<HTMLVideoElement>(null);
 
@@ -32,31 +55,102 @@ export default function VideoPreview({ file, devicePreset, onConfirm, onCancel }
     return `${Math.round(ratioWidth)}:${Math.round(ratioHeight)}`;
   };
 
+  const getVideoFrameRate = async (video: HTMLVideoElement): Promise<number | undefined> => {
+    return new Promise((resolve) => {
+      let frameCount = 0;
+      let lastTime = 0;
+      let frameTimes: number[] = [];
+      
+      const checkFrame = () => {
+        if (!video.paused && !video.ended) {
+          frameCount++;
+          const time = video.currentTime;
+          if (lastTime !== time) {
+            frameTimes.push(1000 / (time - lastTime));
+            lastTime = time;
+            
+            if (frameTimes.length >= 10 || time >= 1) {
+              const avgFrameRate = frameTimes.reduce((a, b) => a + b, 0) / frameTimes.length;
+              video.pause();
+              resolve(Math.round(avgFrameRate));
+              return;
+            }
+          }
+          requestAnimationFrame(checkFrame);
+        }
+      };
+
+      video.play().then(() => {
+        requestAnimationFrame(checkFrame);
+      }).catch(() => {
+        resolve(undefined);
+      });
+    });
+  };
+
   useEffect(() => {
     let objectUrl = '';
     
     const loadVideoData = async () => {
       try {
-        // Create video URL
         objectUrl = URL.createObjectURL(file);
         setVideoUrl(objectUrl);
 
-        // Get metadata
-        const meta = await getVideoMetadata(file);
-        
-        // Get frame rate (optional, as it requires playing the video)
-        const tempVideo = document.createElement('video');
-        tempVideo.muted = true;
-        tempVideo.src = objectUrl;
-        const frameRate = await getVideoFrameRate(tempVideo);
-        tempVideo.remove(); // Clean up the temporary video element
-        
-        setMetadata({
-          ...meta,
-          frameRate
+        const video = document.createElement('video');
+        video.preload = 'metadata';
+        video.muted = true;
+        video.src = objectUrl;
+
+        await new Promise<void>((resolve) => {
+          video.onloadedmetadata = () => resolve();
         });
-        
+
+        const frameRate = await getVideoFrameRate(video);
+
+        let audioInfo = {};
+        try {
+          // Check for captureStream/mozCaptureStream support
+          const captureMethod = video.captureStream || (video as any).mozCaptureStream;
+          if (captureMethod) {
+            const stream = captureMethod.call(video);
+            const audioTrack = stream.getAudioTracks()[0];
+            if (audioTrack && 'getSettings' in audioTrack) {
+              const settings = audioTrack.getSettings();
+              audioInfo = {
+                audioChannels: settings.channelCount || undefined,
+                audioSampleRate: settings.sampleRate || undefined,
+              };
+            }
+          }
+        } catch (e) {
+          console.warn('Could not get audio metadata:', e);
+        }
+
+        const bitrate = file.size * 8 / video.duration;
+
+        const mimeCodecs = file.type.split(';')[1]?.match(/codecs="([^"]+)"/)?.[1];
+        const [videoCodec, audioCodec] = mimeCodecs?.split(',') || [];
+
+        const newMetadata: VideoMetadata = {
+          fileName: file.name,
+          fileSize: formatFileSize(file.size),
+          fileType: file.type,
+          lastModified: new Date(file.lastModified).toLocaleString(),
+          duration: video.duration,
+          width: video.videoWidth,
+          height: video.videoHeight,
+          aspectRatio: video.videoWidth / video.videoHeight,
+          frameRate,
+          bitrate,
+          videoCodec,
+          audioCodec,
+          ...audioInfo
+        };
+
+        setMetadata(newMetadata);
         setLoading(false);
+
+        video.remove();
       } catch (error) {
         console.error('Error loading video:', error);
         setLoading(false);
@@ -65,7 +159,6 @@ export default function VideoPreview({ file, devicePreset, onConfirm, onCancel }
 
     loadVideoData();
 
-    // Cleanup function
     return () => {
       if (videoRef.current) {
         videoRef.current.pause();
@@ -144,19 +237,19 @@ export default function VideoPreview({ file, devicePreset, onConfirm, onCancel }
               <dl className="space-y-2">
                 <div className="flex justify-between items-start gap-4">
                   <dt className="text-gray-500 shrink-0">Name</dt>
-                  <dd className="text-gray-900 text-right break-all">{metadata.fileName}</dd>
+                  <dd className="text-gray-900 text-right break-all">{metadata?.fileName}</dd>
                 </div>
                 <div className="flex justify-between">
                   <dt className="text-gray-500">Size</dt>
-                  <dd className="text-gray-900">{metadata.fileSize}</dd>
+                  <dd className="text-gray-900">{metadata?.fileSize}</dd>
                 </div>
                 <div className="flex justify-between">
                   <dt className="text-gray-500">Type</dt>
-                  <dd className="text-gray-900">{metadata.fileType}</dd>
+                  <dd className="text-gray-900">{metadata?.fileType}</dd>
                 </div>
                 <div className="flex justify-between">
                   <dt className="text-gray-500">Modified</dt>
-                  <dd className="text-gray-900">{metadata.lastModified}</dd>
+                  <dd className="text-gray-900">{metadata?.lastModified}</dd>
                 </div>
               </dl>
             </div>
@@ -167,24 +260,65 @@ export default function VideoPreview({ file, devicePreset, onConfirm, onCancel }
               <dl className="space-y-2">
                 <div className="flex justify-between">
                   <dt className="text-gray-500">Duration</dt>
-                  <dd className="text-gray-900">{formatDuration(metadata.duration)}</dd>
+                  <dd className="text-gray-900">{formatDuration(metadata?.duration || 0)}</dd>
                 </div>
                 <div className="flex justify-between">
                   <dt className="text-gray-500">Resolution</dt>
-                  <dd className="text-gray-900">{metadata.width} × {metadata.height}</dd>
+                  <dd className="text-gray-900">{metadata?.width} × {metadata?.height}</dd>
                 </div>
                 <div className="flex justify-between">
                   <dt className="text-gray-500">Aspect Ratio</dt>
-                  <dd className="text-gray-900">{formatAspectRatio(metadata.width, metadata.height)}</dd>
+                  <dd className="text-gray-900">{formatAspectRatio(metadata?.width || 0, metadata?.height || 0)}</dd>
                 </div>
-                {metadata.frameRate && (
+                <div className="flex justify-between">
+                  <dt className="text-gray-500">Frame Rate</dt>
+                  <dd className="text-gray-900">{metadata?.frameRate || 'Unknown'} fps</dd>
+                </div>
+                <div className="flex justify-between">
+                  <dt className="text-gray-500">Bitrate</dt>
+                  <dd className="text-gray-900">
+                    {metadata?.bitrate ? `${(metadata.bitrate / 1000000).toFixed(2)} Mbps` : 'Unknown'}
+                  </dd>
+                </div>
+                {metadata?.videoCodec && (
                   <div className="flex justify-between">
-                    <dt className="text-gray-500">Frame Rate</dt>
-                    <dd className="text-gray-900">{metadata.frameRate} fps</dd>
+                    <dt className="text-gray-500">Video Codec</dt>
+                    <dd className="text-gray-900">{metadata.videoCodec}</dd>
                   </div>
                 )}
               </dl>
             </div>
+
+            {/* Audio Specifications */}
+            {(metadata?.audioCodec || metadata?.audioChannels || metadata?.audioSampleRate) && (
+              <div className="p-4 bg-gray-50 rounded-lg border-2 border-gray-400">
+                <h4 className="font-medium text-gray-900 mb-4">Audio Specifications</h4>
+                <dl className="space-y-2">
+                  {metadata?.audioCodec && (
+                    <div className="flex justify-between">
+                      <dt className="text-gray-500">Audio Codec</dt>
+                      <dd className="text-gray-900">{metadata.audioCodec}</dd>
+                    </div>
+                  )}
+                  {metadata?.audioChannels && (
+                    <div className="flex justify-between">
+                      <dt className="text-gray-500">Audio Channels</dt>
+                      <dd className="text-gray-900">
+                        {metadata.audioChannels === 1 ? 'Mono' : 
+                         metadata.audioChannels === 2 ? 'Stereo' : 
+                         `${metadata.audioChannels} channels`}
+                      </dd>
+                    </div>
+                  )}
+                  {metadata?.audioSampleRate && (
+                    <div className="flex justify-between">
+                      <dt className="text-gray-500">Sample Rate</dt>
+                      <dd className="text-gray-900">{(metadata.audioSampleRate / 1000).toFixed(1)} kHz</dd>
+                    </div>
+                  )}
+                </dl>
+              </div>
+            )}
           </div>
 
           {/* Target Device Information */}

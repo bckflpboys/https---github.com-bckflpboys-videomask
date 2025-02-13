@@ -124,7 +124,7 @@ export default function UploadPage() {
 
             {/* Video Preview or Upload Area */}
             <div className="mb-16 p-8 bg-white rounded-xl border-2 border-gray-400 shadow-lg">
-              {showPreview ? (
+              {showPreview && selectedFile !== null ? (
                 <VideoPreview
                   file={selectedFile}
                   devicePreset={selectedPreset || undefined}
