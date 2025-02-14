@@ -4,7 +4,7 @@ import { useSession } from 'next-auth/react';
 import { redirect, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
-import { FiVideo, FiHardDrive, FiClock, FiDollarSign } from 'react-icons/fi';
+import { FiVideo, FiHardDrive, FiClock, FiDollarSign, FiInfo } from 'react-icons/fi';
 
 export default function Dashboard() {
   const { data: session, status } = useSession();
@@ -86,14 +86,32 @@ export default function Dashboard() {
           </div>
 
           <div className="card p-6 border-2 border-gray-200 hover:border-blue-500 transition-colors duration-200">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600">Credits</p>
-                <p className="mt-2 text-3xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">0</p>
+            <p className="text-sm font-medium text-gray-600 mb-3">Credits</p>
+            <div className="flex items-center">
+              <div className="flex-1 text-center">
+                <span className="text-xs text-gray-500">Premium</span>
+                <p className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">0</p>
               </div>
-              <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center border-2 border-blue-200">
-                <FiDollarSign className="w-6 h-6 text-blue-600" />
+              <div className="mx-4 flex flex-col items-center justify-center">
+                <div className="h-12 w-px bg-gray-400"></div>
+                <div className="w-4 h-px bg-gray-400 my-1"></div>
+                <div className="h-12 w-px bg-gray-400"></div>
               </div>
+              <div className="flex-1 text-center">
+                <div className="flex items-center justify-center gap-1">
+                  <span className="text-xs text-gray-500">Free</span>
+                  <div className="group relative">
+                    <FiInfo className="w-3 h-3 text-gray-400 cursor-help" />
+                    <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-3 py-2 bg-gray-900 text-white text-xs rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap pointer-events-none">
+                      Receive 10 free credits every month
+                    </div>
+                  </div>
+                </div>
+                <p className="text-2xl font-bold bg-gradient-to-r from-green-500 to-teal-500 bg-clip-text text-transparent">0</p>
+              </div>
+            </div>
+            <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center border-2 border-blue-200 mx-auto mt-3">
+              <FiDollarSign className="w-6 h-6 text-blue-600" />
             </div>
           </div>
         </div>
