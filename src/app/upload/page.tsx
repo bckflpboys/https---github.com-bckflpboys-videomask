@@ -65,15 +65,15 @@ export default function UploadPage() {
     setShowPreview(true);
   };
 
-  const handleUploadConfirm = async () => {
-    if (!selectedFile) return;
+  const handleUploadConfirm = async (processedFile: File) => {
+    if (!processedFile) return;
     
     setShowPreview(false);
     setIsUploading(true);
     setUploadProgress(0);
 
     try {
-      const result = await uploadVideo(selectedFile);
+      const result = await uploadVideo(processedFile);
       
       if (result.success) {
         // Handle successful upload

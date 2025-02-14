@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { getVideoMetadata, formatFileSize } from '@/lib/videoMetadata';
+import { processVideo } from '@/lib/videoProcessor';
 import type { DevicePreset } from '@/lib/devicePresets';
 
 interface VideoMetadata {
@@ -25,7 +26,7 @@ interface VideoMetadata {
 interface VideoPreviewProps {
   file: File;
   devicePreset?: DevicePreset;
-  onConfirm: () => void;
+  onConfirm: (file: File) => void;
   onCancel: () => void;
 }
 
@@ -41,6 +42,8 @@ export default function VideoPreview({ file, devicePreset, onConfirm, onCancel }
   const [loading, setLoading] = useState(true);
   const [showEditModal, setShowEditModal] = useState(false);
   const [editedMetadata, setEditedMetadata] = useState<Partial<VideoMetadata>>({});
+  const [processingMetadata, setProcessingMetadata] = useState(false);
+  const [currentFile, setCurrentFile] = useState<File>(file);
   const videoRef = useRef<HTMLVideoElement>(null);
 
   const formatDuration = (seconds: number) => {
@@ -93,7 +96,7 @@ export default function VideoPreview({ file, devicePreset, onConfirm, onCancel }
     
     const loadVideoData = async () => {
       try {
-        objectUrl = URL.createObjectURL(file);
+        objectUrl = URL.createObjectURL(currentFile);
         setVideoUrl(objectUrl);
 
         const video = document.createElement('video');
@@ -110,7 +113,7 @@ export default function VideoPreview({ file, devicePreset, onConfirm, onCancel }
         let audioInfo = {};
         try {
           // Get audio codec from MIME type
-          const mimeCodecs = file.type.split(';')[1]?.match(/codecs="([^"]+)"/)?.[1];
+          const mimeCodecs = currentFile.type.split(';')[1]?.match(/codecs="([^"]+)"/)?.[1];
           const [videoCodec, audioCodec] = mimeCodecs?.split(',').map(codec => codec?.trim()) || [];
 
           // Get audio track settings
@@ -126,16 +129,16 @@ export default function VideoPreview({ file, devicePreset, onConfirm, onCancel }
           console.warn('Could not get audio metadata:', e);
         }
 
-        const bitrate = file.size * 8 / video.duration;
+        const bitrate = currentFile.size * 8 / video.duration;
 
-        const mimeCodecs = file.type.split(';')[1]?.match(/codecs="([^"]+)"/)?.[1];
+        const mimeCodecs = currentFile.type.split(';')[1]?.match(/codecs="([^"]+)"/)?.[1];
         const [videoCodec] = mimeCodecs?.split(',') || [];
 
         const newMetadata: VideoMetadata = {
-          fileName: file.name,
-          fileSize: formatFileSize(file.size),
-          fileType: file.type,
-          lastModified: new Date(file.lastModified).toLocaleString(),
+          fileName: currentFile.name,
+          fileSize: formatFileSize(currentFile.size),
+          fileType: currentFile.type,
+          lastModified: new Date(currentFile.lastModified).toLocaleString(),
           duration: video.duration,
           width: video.videoWidth,
           height: video.videoHeight,
@@ -159,16 +162,11 @@ export default function VideoPreview({ file, devicePreset, onConfirm, onCancel }
     loadVideoData();
 
     return () => {
-      if (videoRef.current) {
-        videoRef.current.pause();
-        videoRef.current.removeAttribute('src');
-        videoRef.current.load();
-      }
       if (objectUrl) {
         URL.revokeObjectURL(objectUrl);
       }
     };
-  }, [file]);
+  }, [currentFile]);
 
   // Handle video events
   useEffect(() => {
@@ -350,7 +348,7 @@ export default function VideoPreview({ file, devicePreset, onConfirm, onCancel }
               Edit Metadata
             </button>
             <button
-              onClick={onConfirm}
+              onClick={() => onConfirm(currentFile)}
               className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
             >
               Proceed with Upload
@@ -573,18 +571,38 @@ export default function VideoPreview({ file, devicePreset, onConfirm, onCancel }
                 <button
                   onClick={() => setShowEditModal(false)}
                   className="px-6 py-2 border border-gray-300 rounded-lg hover:bg-gray-50"
+                  disabled={processingMetadata}
                 >
                   Cancel
                 </button>
                 <button
-                  onClick={() => {
-                    // Apply metadata changes
-                    setMetadata({ ...metadata, ...editedMetadata });
-                    setShowEditModal(false);
+                  onClick={async () => {
+                    if (!metadata) return;
+                    
+                    setProcessingMetadata(true);
+                    try {
+                      // Apply metadata changes to the video
+                      const updatedMetadata = { ...metadata, ...editedMetadata };
+                      const processedFile = await processVideo(currentFile, updatedMetadata);
+                      
+                      // Update the current file and metadata
+                      setCurrentFile(processedFile);
+                      setMetadata(updatedMetadata);
+                      setShowEditModal(false);
+                      
+                      // Show success message
+                      alert('Video metadata updated successfully!');
+                    } catch (error) {
+                      console.error('Error processing video:', error);
+                      alert('Failed to update video metadata. Please try again.');
+                    } finally {
+                      setProcessingMetadata(false);
+                    }
                   }}
-                  className="px-6 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
+                  disabled={processingMetadata}
+                  className="px-6 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 disabled:bg-blue-300 disabled:cursor-not-allowed"
                 >
-                  Save Changes
+                  {processingMetadata ? 'Processing...' : 'Save Changes'}
                 </button>
               </div>
             </div>
