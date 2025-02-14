@@ -25,20 +25,25 @@ export default function Navbar() {
 
           {/* Desktop Menu */}
           <div className="hidden md:flex items-center space-x-8">
-            <Link href="#features" className="text-gray-700 hover:text-blue-600 font-medium">Features</Link>
-            <Link href="#pricing" className="text-gray-700 hover:text-blue-600 font-medium">Pricing</Link>
-            <Link href="/upload" className="text-gray-700 hover:text-blue-600 font-medium">Upload</Link>
             {session ? (
-              <button 
-                onClick={() => signOut({ callbackUrl: '/' })}
-                className="btn-primary"
-              >
-                Sign Out
-              </button>
+              <>
+                <Link href="/dashboard" className="text-gray-700 hover:text-blue-600 font-medium">Dashboard</Link>
+                <Link href="/upload" className="text-gray-700 hover:text-blue-600 font-medium">Upload</Link>
+                <button 
+                  onClick={() => signOut({ callbackUrl: '/' })}
+                  className="btn-primary"
+                >
+                  Sign Out
+                </button>
+              </>
             ) : (
-              <Link href="/auth/signin" className="btn-primary">
-                Sign In
-              </Link>
+              <>
+                <Link href="#features" className="text-gray-700 hover:text-blue-600 font-medium">Features</Link>
+                <Link href="#pricing" className="text-gray-700 hover:text-blue-600 font-medium">Pricing</Link>
+                <Link href="/auth/signin" className="btn-primary">
+                  Sign In
+                </Link>
+              </>
             )}
           </div>
 
@@ -64,38 +69,50 @@ export default function Navbar() {
       {isMobileMenuOpen && (
         <div className="md:hidden bg-white border-b border-gray-100">
           <div className="px-4 pt-2 pb-3 space-y-1">
-            <Link
-              href="#features"
-              className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-blue-600 hover:bg-gray-50"
-            >
-              Features
-            </Link>
-            <Link
-              href="#pricing"
-              className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-blue-600 hover:bg-gray-50"
-            >
-              Pricing
-            </Link>
-            <Link
-              href="/upload"
-              className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-blue-600 hover:bg-gray-50"
-            >
-              Upload
-            </Link>
-            <div className="pt-4 pb-2">
-              {session ? (
-                <button 
-                  onClick={() => signOut({ callbackUrl: '/' })}
-                  className="w-full btn-primary"
+            {session ? (
+              <>
+                <Link
+                  href="/dashboard"
+                  className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-blue-600 hover:bg-gray-50"
                 >
-                  Sign Out
-                </button>
-              ) : (
-                <Link href="/auth/signin" className="w-full btn-primary block text-center">
-                  Sign In
+                  Dashboard
                 </Link>
-              )}
-            </div>
+                <Link
+                  href="/upload"
+                  className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-blue-600 hover:bg-gray-50"
+                >
+                  Upload
+                </Link>
+                <div className="pt-4 pb-2">
+                  <button 
+                    onClick={() => signOut({ callbackUrl: '/' })}
+                    className="w-full btn-primary"
+                  >
+                    Sign Out
+                  </button>
+                </div>
+              </>
+            ) : (
+              <>
+                <Link
+                  href="#features"
+                  className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-blue-600 hover:bg-gray-50"
+                >
+                  Features
+                </Link>
+                <Link
+                  href="#pricing"
+                  className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-blue-600 hover:bg-gray-50"
+                >
+                  Pricing
+                </Link>
+                <div className="pt-4 pb-2">
+                  <Link href="/auth/signin" className="w-full btn-primary block text-center">
+                    Sign In
+                  </Link>
+                </div>
+              </>
+            )}
           </div>
         </div>
       )}

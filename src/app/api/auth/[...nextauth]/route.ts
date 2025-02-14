@@ -1,10 +1,25 @@
-import NextAuth from 'next-auth';
+import NextAuth, { DefaultSession } from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
 import { MongoDBAdapter } from '@auth/mongodb-adapter';
 import clientPromise from '@/lib/mongodb';
 import { User } from '@/models/user';
 import connectDB from '@/lib/db';
 import bcrypt from 'bcryptjs';
+import { JWT } from 'next-auth/jwt';
+
+declare module 'next-auth' {
+  interface Session {
+    user: {
+      id: string;
+    } & DefaultSession['user']
+  }
+}
+
+declare module 'next-auth/jwt' {
+  interface JWT {
+    id: string;
+  }
+}
 
 const handler = NextAuth({
   adapter: MongoDBAdapter(clientPromise),
@@ -48,13 +63,13 @@ const handler = NextAuth({
     signIn: '/auth/signin',
   },
   callbacks: {
-    async jwt({ token, user }) {
+    async jwt({ token, user }: { token: JWT, user: any }) {
       if (user) {
         token.id = user.id;
       }
       return token;
     },
-    async session({ session, token }) {
+    async session({ session, token }: { session: any, token: JWT }) {
       if (session.user) {
         session.user.id = token.id;
       }
