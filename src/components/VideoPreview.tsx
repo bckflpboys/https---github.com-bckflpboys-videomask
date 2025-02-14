@@ -19,6 +19,7 @@ interface VideoMetadata {
   audioCodec?: string;
   audioChannels?: number;
   audioSampleRate?: number;
+  speed?: number;
 }
 
 interface VideoPreviewProps {
@@ -38,6 +39,8 @@ export default function VideoPreview({ file, devicePreset, onConfirm, onCancel }
   const [videoUrl, setVideoUrl] = useState<string>('');
   const [metadata, setMetadata] = useState<VideoMetadata | null>(null);
   const [loading, setLoading] = useState(true);
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [editedMetadata, setEditedMetadata] = useState<Partial<VideoMetadata>>({});
   const videoRef = useRef<HTMLVideoElement>(null);
 
   const formatDuration = (seconds: number) => {
@@ -336,19 +339,258 @@ export default function VideoPreview({ file, devicePreset, onConfirm, onCancel }
           <div className="px-6 py-4 bg-gray-50 border-t-2 border-gray-400 flex justify-end space-x-4 rounded-b-xl">
             <button
               onClick={handleCancel}
-              className="px-4 py-2 text-gray-700 hover:text-gray-900 font-medium border-2 border-gray-400 rounded-lg hover:bg-gray-100"
+              className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50"
             >
               Cancel
             </button>
             <button
+              onClick={() => setShowEditModal(true)}
+              className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200"
+            >
+              Edit Metadata
+            </button>
+            <button
               onClick={onConfirm}
-              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium border-2 border-blue-700"
+              className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
             >
               Proceed with Upload
             </button>
           </div>
         </div>
       </div>
+
+      {/* Edit Metadata Modal */}
+      {showEditModal && metadata && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+          <div className="bg-white rounded-lg max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+            <div className="p-6">
+              <div className="flex justify-between items-center mb-6">
+                <h2 className="text-2xl font-bold">Edit Video Metadata</h2>
+                <button
+                  onClick={() => setShowEditModal(false)}
+                  className="text-gray-500 hover:text-gray-700"
+                >
+                  ×
+                </button>
+              </div>
+
+              <div className="space-y-6">
+                {/* File Details */}
+                <div>
+                  <h3 className="text-lg font-semibold mb-4">File Details</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700">Name</label>
+                      <input
+                        type="text"
+                        value={editedMetadata.fileName || metadata.fileName}
+                        onChange={(e) => setEditedMetadata({ ...editedMetadata, fileName: e.target.value })}
+                        className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700">Type</label>
+                      <select
+                        value={editedMetadata.fileType || metadata.fileType}
+                        onChange={(e) => setEditedMetadata({ ...editedMetadata, fileType: e.target.value })}
+                        className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500"
+                      >
+                        <option value="video/mp4">MP4</option>
+                        <option value="video/webm">WebM</option>
+                        <option value="video/x-matroska">MKV</option>
+                        <option value="video/quicktime">MOV</option>
+                        <option value="video/x-msvideo">AVI</option>
+                        <option value="video/x-flv">FLV</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700">Modified Date</label>
+                      <input
+                        type="datetime-local"
+                        value={editedMetadata.lastModified ? new Date(editedMetadata.lastModified).toISOString().slice(0, 16) : new Date(metadata.lastModified).toISOString().slice(0, 16)}
+                        onChange={(e) => setEditedMetadata({ ...editedMetadata, lastModified: new Date(e.target.value).toISOString() })}
+                        className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Video Specifications */}
+                <div>
+                  <h3 className="text-lg font-semibold mb-4">Video Specifications</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700">Resolution Width</label>
+                      <input
+                        type="number"
+                        value={editedMetadata.width || metadata.width}
+                        onChange={(e) => {
+                          const width = Number(e.target.value);
+                          const height = editedMetadata.height || metadata.height;
+                          setEditedMetadata({
+                            ...editedMetadata,
+                            width,
+                            aspectRatio: width / height
+                          });
+                        }}
+                        className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700">Resolution Height</label>
+                      <input
+                        type="number"
+                        value={editedMetadata.height || metadata.height}
+                        onChange={(e) => {
+                          const height = Number(e.target.value);
+                          const width = editedMetadata.width || metadata.width;
+                          setEditedMetadata({
+                            ...editedMetadata,
+                            height,
+                            aspectRatio: width / height
+                          });
+                        }}
+                        className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700">Aspect Ratio</label>
+                      <select
+                        value={editedMetadata.aspectRatio || metadata.aspectRatio}
+                        onChange={(e) => {
+                          const ratio = Number(e.target.value);
+                          const height = editedMetadata.height || metadata.height;
+                          setEditedMetadata({
+                            ...editedMetadata,
+                            aspectRatio: ratio,
+                            width: Math.round(height * ratio)
+                          });
+                        }}
+                        className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500"
+                      >
+                        <option value={16/9}>16:9</option>
+                        <option value={4/3}>4:3</option>
+                        <option value={21/9}>21:9</option>
+                        <option value={1}>1:1</option>
+                        <option value={3/2}>3:2</option>
+                        <option value={9/16}>9:16 (Portrait)</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700">Frame Rate (fps)</label>
+                      <select
+                        value={editedMetadata.frameRate || metadata.frameRate}
+                        onChange={(e) => setEditedMetadata({ ...editedMetadata, frameRate: Number(e.target.value) })}
+                        className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500"
+                      >
+                        <option value="23.976">23.976 (Film)</option>
+                        <option value="24">24 (Cinema)</option>
+                        <option value="25">25 (PAL)</option>
+                        <option value="29.97">29.97 (NTSC)</option>
+                        <option value="30">30</option>
+                        <option value="48">48</option>
+                        <option value="50">50</option>
+                        <option value="60">60</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700">Video Speed (×)</label>
+                      <select
+                        value={editedMetadata.speed || 1}
+                        onChange={(e) => {
+                          const speed = Number(e.target.value);
+                          setEditedMetadata({
+                            ...editedMetadata,
+                            speed,
+                            duration: metadata.duration / speed
+                          });
+                        }}
+                        className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500"
+                      >
+                        <option value="0.25">0.25× (Slow)</option>
+                        <option value="0.5">0.5× (Slow)</option>
+                        <option value="0.75">0.75× (Slow)</option>
+                        <option value="1">1× (Normal)</option>
+                        <option value="1.25">1.25× (Fast)</option>
+                        <option value="1.5">1.5× (Fast)</option>
+                        <option value="2">2× (Fast)</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700">Duration</label>
+                      <input
+                        type="text"
+                        value={formatDuration(editedMetadata.duration || metadata.duration)}
+                        disabled
+                        className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-50"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Audio Specifications */}
+                <div>
+                  <h3 className="text-lg font-semibold mb-4">Audio Specifications</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700">Audio Codec</label>
+                      <input
+                        type="text"
+                        value={editedMetadata.audioCodec || metadata.audioCodec || ''}
+                        onChange={(e) => setEditedMetadata({ ...editedMetadata, audioCodec: e.target.value })}
+                        className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700">Audio Channels</label>
+                      <select
+                        value={editedMetadata.audioChannels || metadata.audioChannels || ''}
+                        onChange={(e) => setEditedMetadata({ ...editedMetadata, audioChannels: Number(e.target.value) })}
+                        className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500"
+                      >
+                        <option value="1">Mono</option>
+                        <option value="2">Stereo</option>
+                        <option value="6">5.1 Surround</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700">Sample Rate (kHz)</label>
+                      <select
+                        value={editedMetadata.audioSampleRate || metadata.audioSampleRate || ''}
+                        onChange={(e) => setEditedMetadata({ ...editedMetadata, audioSampleRate: Number(e.target.value) })}
+                        className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500"
+                      >
+                        <option value="44100">44.1</option>
+                        <option value="48000">48.0</option>
+                        <option value="96000">96.0</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex justify-end space-x-4 mt-6">
+                <button
+                  onClick={() => setShowEditModal(false)}
+                  className="px-6 py-2 border border-gray-300 rounded-lg hover:bg-gray-50"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={() => {
+                    // Apply metadata changes
+                    setMetadata({ ...metadata, ...editedMetadata });
+                    setShowEditModal(false);
+                  }}
+                  className="px-6 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
+                >
+                  Save Changes
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
