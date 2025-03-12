@@ -1,3 +1,5 @@
+export type ResizeMode = 'stretch' | 'crop' | 'letterbox';
+
 export interface VideoMetadata {
   fileName: string;
   fileSize: string;
@@ -6,7 +8,7 @@ export interface VideoMetadata {
   duration: number;
   width: number;
   height: number;
-  aspectRatio: number;
+  aspectRatio: string | number;
   frameRate?: number;
   bitrate?: number;
   videoCodec?: string;
@@ -14,4 +16,5 @@ export interface VideoMetadata {
   audioChannels?: number;
   audioSampleRate?: number;
   speed?: number;
+  resizeMode?: ResizeMode;
 }

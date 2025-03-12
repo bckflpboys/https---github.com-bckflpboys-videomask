@@ -21,6 +21,7 @@ interface VideoMetadata {
   audioChannels?: number;
   audioSampleRate?: number;
   speed?: number;
+  resizeMode?: ResizeMode;
 }
 
 interface VideoPreviewProps {
@@ -36,6 +37,8 @@ declare global {
   }
 }
 
+type ResizeMode = 'stretch' | 'crop' | 'letterbox';
+
 export default function VideoPreview({ file, devicePreset, onConfirm, onCancel }: VideoPreviewProps) {
   const [videoUrl, setVideoUrl] = useState<string>('');
   const [metadata, setMetadata] = useState<VideoMetadata | null>(null);
@@ -43,6 +46,8 @@ export default function VideoPreview({ file, devicePreset, onConfirm, onCancel }
   const [showEditModal, setShowEditModal] = useState(false);
   const [editedMetadata, setEditedMetadata] = useState<Partial<VideoMetadata>>({});
   const [processingMetadata, setProcessingMetadata] = useState(false);
+  const [processingError, setProcessingError] = useState<string | null>(null);
+  const [processingProgress, setProcessingProgress] = useState(0);
   const [currentFile, setCurrentFile] = useState<File>(file);
   const videoRef = useRef<HTMLVideoElement>(null);
 
@@ -195,6 +200,34 @@ export default function VideoPreview({ file, devicePreset, onConfirm, onCancel }
       videoRef.current.load();
     }
     onCancel();
+  };
+
+  const handleSaveChanges = async () => {
+    if (!metadata) return;
+    
+    setProcessingMetadata(true);
+    setProcessingError(null);
+    setProcessingProgress(0);
+    
+    try {
+      // Apply metadata changes to the video
+      const updatedMetadata = { ...metadata, ...editedMetadata };
+      const processedFile = await processVideo(currentFile, updatedMetadata, (progress) => {
+        setProcessingProgress(progress);
+      });
+      
+      // Update the current file and metadata
+      setCurrentFile(processedFile);
+      setMetadata(updatedMetadata);
+      setShowEditModal(false);
+      
+    } catch (error) {
+      console.error('Error processing video:', error);
+      setProcessingError('Failed to process video. Please try again.');
+    } finally {
+      setProcessingMetadata(false);
+      setProcessingProgress(0);
+    }
   };
 
   if (loading) {
@@ -416,112 +449,82 @@ export default function VideoPreview({ file, devicePreset, onConfirm, onCancel }
                 {/* Video Specifications */}
                 <div>
                   <h3 className="text-lg font-semibold mb-4">Video Specifications</h3>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700">Resolution Width</label>
-                      <input
-                        type="number"
-                        value={editedMetadata.width || metadata.width}
-                        onChange={(e) => {
-                          const width = Number(e.target.value);
-                          const height = editedMetadata.height || metadata.height;
-                          setEditedMetadata({
-                            ...editedMetadata,
-                            width,
-                            aspectRatio: width / height
-                          });
-                        }}
-                        className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500"
-                      />
+                  <div className="grid grid-cols-1 gap-4">
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700">Width</label>
+                        <input
+                          type="number"
+                          value={editedMetadata.width || metadata?.width}
+                          onChange={(e) => {
+                            const width = parseInt(e.target.value);
+                            setEditedMetadata({
+                              ...editedMetadata,
+                              width,
+                              aspectRatio: width / (editedMetadata.height || metadata?.height)
+                            });
+                          }}
+                          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700">Height</label>
+                        <input
+                          type="number"
+                          value={editedMetadata.height || metadata?.height}
+                          onChange={(e) => {
+                            const height = parseInt(e.target.value);
+                            setEditedMetadata({
+                              ...editedMetadata,
+                              height,
+                              aspectRatio: (editedMetadata.width || metadata?.width) / height
+                            });
+                          }}
+                          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                        />
+                      </div>
                     </div>
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700">Resolution Height</label>
-                      <input
-                        type="number"
-                        value={editedMetadata.height || metadata.height}
-                        onChange={(e) => {
-                          const height = Number(e.target.value);
-                          const width = editedMetadata.width || metadata.width;
-                          setEditedMetadata({
-                            ...editedMetadata,
-                            height,
-                            aspectRatio: width / height
-                          });
-                        }}
-                        className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700">Aspect Ratio</label>
-                      <select
-                        value={editedMetadata.aspectRatio || metadata.aspectRatio}
-                        onChange={(e) => {
-                          const ratio = Number(e.target.value);
-                          const height = editedMetadata.height || metadata.height;
-                          setEditedMetadata({
-                            ...editedMetadata,
-                            aspectRatio: ratio,
-                            width: Math.round(height * ratio)
-                          });
-                        }}
-                        className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500"
-                      >
-                        <option value={16/9}>16:9</option>
-                        <option value={4/3}>4:3</option>
-                        <option value={21/9}>21:9</option>
-                        <option value={1}>1:1</option>
-                        <option value={3/2}>3:2</option>
-                        <option value={9/16}>9:16 (Portrait)</option>
-                      </select>
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700">Frame Rate (fps)</label>
-                      <select
-                        value={editedMetadata.frameRate || metadata.frameRate}
-                        onChange={(e) => setEditedMetadata({ ...editedMetadata, frameRate: Number(e.target.value) })}
-                        className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500"
-                      >
-                        <option value="23.976">23.976 (Film)</option>
-                        <option value="24">24 (Cinema)</option>
-                        <option value="25">25 (PAL)</option>
-                        <option value="29.97">29.97 (NTSC)</option>
-                        <option value="30">30</option>
-                        <option value="48">48</option>
-                        <option value="50">50</option>
-                        <option value="60">60</option>
-                      </select>
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700">Video Speed (×)</label>
-                      <select
-                        value={editedMetadata.speed || 1}
-                        onChange={(e) => {
-                          const speed = Number(e.target.value);
-                          setEditedMetadata({
-                            ...editedMetadata,
-                            speed,
-                            duration: metadata.duration / speed
-                          });
-                        }}
-                        className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500"
-                      >
-                        <option value="0.25">0.25× (Slow)</option>
-                        <option value="0.5">0.5× (Slow)</option>
-                        <option value="0.75">0.75× (Slow)</option>
-                        <option value="1">1× (Normal)</option>
-                        <option value="1.25">1.25× (Fast)</option>
-                        <option value="1.5">1.5× (Fast)</option>
-                        <option value="2">2× (Fast)</option>
-                      </select>
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700">Duration</label>
-                      <input
-                        type="text"
-                        value={formatDuration(editedMetadata.duration || metadata.duration)}
-                        disabled
-                        className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-50"
-                      />
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700">Aspect Ratio</label>
+                        <select
+                          value={editedMetadata.aspectRatio || metadata?.aspectRatio}
+                          onChange={(e) => {
+                            const aspectRatio = parseFloat(e.target.value);
+                            const height = editedMetadata.height || metadata?.height;
+                            setEditedMetadata({
+                              ...editedMetadata,
+                              aspectRatio,
+                              width: Math.round(height * aspectRatio)
+                            });
+                          }}
+                          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                        >
+                          <option value={16/9}>16:9</option>
+                          <option value={4/3}>4:3</option>
+                          <option value={21/9}>21:9</option>
+                          <option value={1}>1:1</option>
+                          <option value={3/2}>3:2</option>
+                          <option value={9/16}>9:16</option>
+                        </select>
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700">Resize Mode</label>
+                        <select
+                          value={editedMetadata.resizeMode || 'stretch'}
+                          onChange={(e) => {
+                            setEditedMetadata({
+                              ...editedMetadata,
+                              resizeMode: e.target.value as ResizeMode
+                            });
+                          }}
+                          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                        >
+                          <option value="stretch">Stretch/Squeeze</option>
+                          <option value="crop">Crop to Fill</option>
+                          <option value="letterbox">Add Black Bars</option>
+                        </select>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -536,7 +539,7 @@ export default function VideoPreview({ file, devicePreset, onConfirm, onCancel }
                         type="text"
                         value={editedMetadata.audioCodec || metadata.audioCodec || ''}
                         onChange={(e) => setEditedMetadata({ ...editedMetadata, audioCodec: e.target.value })}
-                        className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500"
+                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
                       />
                     </div>
                     <div>
@@ -544,7 +547,7 @@ export default function VideoPreview({ file, devicePreset, onConfirm, onCancel }
                       <select
                         value={editedMetadata.audioChannels || metadata.audioChannels || ''}
                         onChange={(e) => setEditedMetadata({ ...editedMetadata, audioChannels: Number(e.target.value) })}
-                        className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500"
+                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
                       >
                         <option value="1">Mono</option>
                         <option value="2">Stereo</option>
@@ -556,7 +559,7 @@ export default function VideoPreview({ file, devicePreset, onConfirm, onCancel }
                       <select
                         value={editedMetadata.audioSampleRate || metadata.audioSampleRate || ''}
                         onChange={(e) => setEditedMetadata({ ...editedMetadata, audioSampleRate: Number(e.target.value) })}
-                        className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500"
+                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
                       >
                         <option value="44100">44.1</option>
                         <option value="48000">48.0</option>
@@ -567,43 +570,44 @@ export default function VideoPreview({ file, devicePreset, onConfirm, onCancel }
                 </div>
               </div>
 
-              <div className="flex justify-end space-x-4 mt-6">
-                <button
-                  onClick={() => setShowEditModal(false)}
-                  className="px-6 py-2 border border-gray-300 rounded-lg hover:bg-gray-50"
-                  disabled={processingMetadata}
-                >
-                  Cancel
-                </button>
-                <button
-                  onClick={async () => {
-                    if (!metadata) return;
-                    
-                    setProcessingMetadata(true);
-                    try {
-                      // Apply metadata changes to the video
-                      const updatedMetadata = { ...metadata, ...editedMetadata };
-                      const processedFile = await processVideo(currentFile, updatedMetadata);
-                      
-                      // Update the current file and metadata
-                      setCurrentFile(processedFile);
-                      setMetadata(updatedMetadata);
-                      setShowEditModal(false);
-                      
-                      // Show success message
-                      alert('Video metadata updated successfully!');
-                    } catch (error) {
-                      console.error('Error processing video:', error);
-                      alert('Failed to update video metadata. Please try again.');
-                    } finally {
-                      setProcessingMetadata(false);
-                    }
-                  }}
-                  disabled={processingMetadata}
-                  className="px-6 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 disabled:bg-blue-300 disabled:cursor-not-allowed"
-                >
-                  {processingMetadata ? 'Processing...' : 'Save Changes'}
-                </button>
+              <div className="flex flex-col space-y-4">
+                <div className="flex justify-end space-x-4">
+                  <button
+                    onClick={() => setShowEditModal(false)}
+                    className="px-6 py-2 border border-gray-300 rounded-lg hover:bg-gray-50"
+                    disabled={processingMetadata}
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={handleSaveChanges}
+                    disabled={processingMetadata}
+                    className="px-6 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 disabled:bg-blue-300 disabled:cursor-not-allowed"
+                  >
+                    {processingMetadata ? (
+                      <span className="flex items-center">
+                        <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                        Processing... {processingProgress > 0 ? `${Math.round(processingProgress)}%` : ''}
+                      </span>
+                    ) : 'Save Changes'}
+                  </button>
+                </div>
+                {processingMetadata && processingProgress > 0 && (
+                  <div className="w-full bg-gray-200 rounded-full h-2.5">
+                    <div 
+                      className="bg-blue-600 h-2.5 rounded-full transition-all duration-300" 
+                      style={{ width: `${processingProgress}%` }}
+                    ></div>
+                  </div>
+                )}
+                {processingError && (
+                  <div className="mt-4 text-red-500">
+                    {processingError}
+                  </div>
+                )}
               </div>
             </div>
           </div>
