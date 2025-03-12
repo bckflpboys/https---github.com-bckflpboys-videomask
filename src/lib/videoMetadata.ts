@@ -57,9 +57,8 @@ export const getVideoFrameRate = async (video: HTMLVideoElement): Promise<number
     video.play().then(() => {
       requestAnimationFrame(checkFrame);
     }).catch(() => {
-      // If we can't play the video, try to get frame rate from video type
-      const fpsMatch = video.type?.match(/fps=(\d+)/);
-      resolve(fpsMatch ? parseInt(fpsMatch[1]) : undefined);
+      // If we can't play the video, we cannot determine the frame rate
+      resolve(undefined);
     });
   });
 };
