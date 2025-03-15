@@ -10,8 +10,10 @@ import { SiXiaomi, SiHuawei, SiGooglechrome } from 'react-icons/si';
 import { devicePresets, DevicePreset } from '@/lib/devicePresets';
 import { uploadVideo } from '@/lib/uploadVideo';
 import VideoPreview from '@/components/VideoPreview';
+import { useSession } from 'next-auth/react';
 
 export default function Hero() {
+  const { data: session } = useSession();
   const [selectedCategory, setSelectedCategory] = useState<DevicePreset['category']>('iPhone');
   const [selectedPreset, setSelectedPreset] = useState<DevicePreset | null>(null);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
@@ -19,6 +21,8 @@ export default function Hero() {
   const [isUploading, setIsUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
   const [showPreview, setShowPreview] = useState(false);
+  const [showSignUpPrompt, setShowSignUpPrompt] = useState(false);
+  const [highlightKey, setHighlightKey] = useState(0);
 
   const presets = devicePresets.filter(preset => preset.category === selectedCategory);
 
@@ -85,6 +89,11 @@ export default function Hero() {
     }
   };
 
+  const handleNonAuthUpload = () => {
+    setShowSignUpPrompt(true);
+    setHighlightKey(prev => prev + 1); // Increment key to force animation replay
+  };
+
   const handlePreviewCancel = () => {
     setShowPreview(false);
     setSelectedFile(null);
@@ -145,12 +154,37 @@ export default function Hero() {
           {/* Upload Section */}
           <div className="mb-16 p-8 bg-white rounded-xl border-2 border-gray-400 shadow-lg max-w-4xl mx-auto">
             {showPreview && selectedFile !== null ? (
-              <VideoPreview
-                file={selectedFile}
-                devicePreset={selectedPreset || undefined}
-                onConfirm={handleUploadConfirm}
-                onCancel={handlePreviewCancel}
-              />
+              <div className="max-w-3xl mx-auto">
+                <VideoPreview
+                  file={selectedFile}
+                  devicePreset={selectedPreset || undefined}
+                  onConfirm={session ? handleUploadConfirm : handleNonAuthUpload}
+                  onCancel={handlePreviewCancel}
+                />
+                {showSignUpPrompt && !session && (
+                  <div 
+                    className="mt-6 p-6 bg-blue-50 rounded-xl border-2 border-blue-200 animate-highlight"
+                    key={highlightKey} // Use highlightKey instead of Date.now()
+                  >
+                    <h3 className="text-xl font-semibold text-gray-900 mb-2">Sign Up to Continue</h3>
+                    <p className="text-gray-600 mb-4">Create an account to start processing your videos and unlock all features.</p>
+                    <div className="flex gap-4">
+                      <Link
+                        href="/auth/signup"
+                        className="flex-1 px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition-colors"
+                      >
+                        Sign Up Now
+                      </Link>
+                      <Link
+                        href="/auth/signin"
+                        className="flex-1 px-6 py-3 bg-white text-blue-600 font-semibold rounded-lg border-2 border-blue-200 hover:bg-blue-50 transition-colors"
+                      >
+                        Sign In
+                      </Link>
+                    </div>
+                  </div>
+                )}
+              </div>
             ) : (
               <div
                 className={`max-w-3xl mx-auto p-12 rounded-2xl border-2 border-dashed transition-all duration-300 ${

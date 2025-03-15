@@ -47,4 +47,31 @@
     /* Add your custom styles here */
     color: #333333; /* Example color */
   }
+
+  @keyframes highlight-border {
+    0% {
+      border-color: #bfdbfe; /* blue-200 */
+      transform: scale(1);
+    }
+    15% {
+      border-color: #3b82f6; /* blue-500 */
+      border-width: 3px;
+      background-color: #eff6ff; /* blue-50 */
+      transform: scale(1.02);
+    }
+    30% {
+      transform: scale(1);
+    }
+    45% {
+      transform: scale(1.01);
+    }
+    100% {
+      border-color: #bfdbfe; /* blue-200 */
+      transform: scale(1);
+    }
+  }
+
+  .animate-highlight {
+    animation: highlight-border 1s ease-out;
+  }
 }
