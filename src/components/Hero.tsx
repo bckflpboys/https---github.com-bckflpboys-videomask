@@ -2,16 +2,25 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { MdPhoneIphone } from 'react-icons/md';
+import { MdPhoneIphone, MdLaptop, MdPhoneAndroid } from 'react-icons/md';
 import { BiCustomize } from 'react-icons/bi';
 import { BsLightningChargeFill } from 'react-icons/bs';
 import { FiUploadCloud } from 'react-icons/fi';
+import { SiXiaomi, SiHuawei, SiGooglechrome } from 'react-icons/si';
+import { devicePresets, DevicePreset } from '@/lib/devicePresets';
 import { uploadVideo } from '@/lib/uploadVideo';
+import VideoPreview from '@/components/VideoPreview';
 
 export default function Hero() {
+  const [selectedCategory, setSelectedCategory] = useState<DevicePreset['category']>('iPhone');
+  const [selectedPreset, setSelectedPreset] = useState<DevicePreset | null>(null);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [isDragging, setIsDragging] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
+  const [showPreview, setShowPreview] = useState(false);
+
+  const presets = devicePresets.filter(preset => preset.category === selectedCategory);
 
   const handleDragOver = (e: React.DragEvent) => {
     e.preventDefault();
@@ -29,21 +38,35 @@ export default function Hero() {
     
     const files = e.dataTransfer.files;
     if (files.length > 0) {
-      await handleFileUpload(files[0]);
+      handleFileSelection(files[0]);
     }
   };
 
-  const handleFileUpload = async (file: File) => {
-    if (!file || !file.type.includes('video/')) {
+  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (files && files.length > 0) {
+      handleFileSelection(files[0]);
+    }
+  };
+
+  const handleFileSelection = (file: File) => {
+    if (!file.type.includes('video/')) {
       alert('Please upload a video file');
       return;
     }
+    setSelectedFile(file);
+    setShowPreview(true);
+  };
 
+  const handleUploadConfirm = async (processedFile: File) => {
+    if (!processedFile) return;
+    
+    setShowPreview(false);
     setIsUploading(true);
     setUploadProgress(0);
 
     try {
-      const result = await uploadVideo(file);
+      const result = await uploadVideo(processedFile);
       
       if (result.success) {
         // Handle successful upload
@@ -58,14 +81,13 @@ export default function Hero() {
     } finally {
       setIsUploading(false);
       setUploadProgress(0);
+      setSelectedFile(null);
     }
   };
 
-  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = e.target.files;
-    if (files && files.length > 0) {
-      handleFileUpload(files[0]);
-    }
+  const handlePreviewCancel = () => {
+    setShowPreview(false);
+    setSelectedFile(null);
   };
 
   return (
@@ -120,6 +142,69 @@ export default function Hero() {
             </div>
           </div>
 
+          {/* Upload Section */}
+          <div className="mb-16 p-8 bg-white rounded-xl border-2 border-gray-400 shadow-lg max-w-4xl mx-auto">
+            {showPreview && selectedFile !== null ? (
+              <VideoPreview
+                file={selectedFile}
+                devicePreset={selectedPreset || undefined}
+                onConfirm={handleUploadConfirm}
+                onCancel={handlePreviewCancel}
+              />
+            ) : (
+              <div
+                className={`max-w-3xl mx-auto p-12 rounded-2xl border-2 border-dashed transition-all duration-300 ${
+                  isDragging
+                    ? 'border-blue-500 bg-blue-50 scale-[1.02]'
+                    : 'border-blue-400 hover:border-blue-500 bg-white/80'
+                }`}
+                onDragOver={handleDragOver}
+                onDragLeave={handleDragLeave}
+                onDrop={handleDrop}
+                onClick={() => document.getElementById('hero-file-upload')?.click()}
+              >
+                <input
+                  type="file"
+                  id="hero-file-upload"
+                  className="hidden"
+                  accept="video/*"
+                  onChange={handleFileSelect}
+                />
+                <div className="text-center space-y-4">
+                  <div className="text-blue-600">
+                    <FiUploadCloud className="w-16 h-16 mx-auto" />
+                  </div>
+                  <div>
+                    <h3 className="text-xl font-semibold text-gray-900 mb-2">
+                      {isDragging ? 'Drop your video here' : selectedPreset 
+                        ? `Upload video for ${selectedPreset.name}`
+                        : 'Upload your video'}
+                    </h3>
+                    <p className="text-gray-500">or click to browse</p>
+                    <p className="text-gray-400 text-sm mt-2">Supports MP4, MOV, AVI (up to 2GB)</p>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+
+          {isUploading && (
+            <div className="fixed inset-0 bg-black/50 flex items-center justify-center">
+              <div className="bg-white p-8 rounded-xl max-w-md w-full mx-4 border-2 border-gray-400 shadow-lg">
+                <div className="space-y-4">
+                  <h3 className="text-xl font-semibold text-gray-900">Uploading Video...</h3>
+                  <div className="h-2 bg-blue-100 rounded-full overflow-hidden border border-blue-400">
+                    <div 
+                      className="h-full bg-blue-500 transition-all duration-300"
+                      style={{ width: `${uploadProgress}%` }}
+                    />
+                  </div>
+                  <p className="text-sm text-blue-600">Progress: {uploadProgress}%</p>
+                </div>
+              </div>
+            </div>
+          )}
+
           {/* CTA Buttons */}
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
             <Link 
@@ -163,50 +248,6 @@ export default function Hero() {
               </div>
               <h3 className="text-xl font-semibold mb-3">Quick Processing</h3>
               <p className="text-gray-600 leading-relaxed">Fast and efficient processing with support for multiple video formats.</p>
-            </div>
-          </div>
-
-          {/* Upload Area */}
-          <div
-            className={`max-w-2xl mx-auto p-10 rounded-2xl border-2 border-dashed transition-all duration-300 transform hover:scale-[1.02] cursor-pointer backdrop-blur-sm ${
-              isDragging
-                ? 'border-blue-500 bg-blue-50/80 scale-[1.02]'
-                : 'border-blue-300 hover:border-blue-500 bg-white/80 hover:bg-blue-50/30'
-            }`}
-            onDragOver={handleDragOver}
-            onDragLeave={handleDragLeave}
-            onDrop={handleDrop}
-            onClick={() => document.getElementById('file-upload')?.click()}
-          >
-            <input
-              type="file"
-              id="file-upload"
-              className="hidden"
-              accept="video/*"
-              onChange={handleFileSelect}
-            />
-            <div className="text-center space-y-4">
-              <div className="text-blue-600">
-                <FiUploadCloud className="w-16 h-16 mx-auto transform transition-transform duration-300 group-hover:scale-110" />
-              </div>
-              <div>
-                <h3 className="text-xl font-semibold text-gray-900 mb-2">
-                  {isDragging ? 'Drop your video here' : 'Drag & drop your video'}
-                </h3>
-                <p className="text-gray-500">or click to browse</p>
-                <p className="text-gray-400 text-sm mt-2">Supports MP4, MOV, AVI (up to 2GB)</p>
-              </div>
-              {isUploading && (
-                <div className="w-full mt-4">
-                  <div className="h-2 bg-blue-100 rounded-full overflow-hidden">
-                    <div 
-                      className="h-full bg-blue-500 transition-all duration-300"
-                      style={{ width: `${uploadProgress}%` }}
-                    />
-                  </div>
-                  <p className="text-sm text-blue-600 mt-2">Uploading... {uploadProgress}%</p>
-                </div>
-              )}
             </div>
           </div>
         </div>
