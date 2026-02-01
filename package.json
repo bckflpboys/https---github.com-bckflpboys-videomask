@@ -23,7 +23,7 @@
     "framer-motion": "^10.16.4",
     "mongodb": "^6.3.0",
     "mongoose": "^8.0.3",
-    "next": "14.0.4",
+    "next": "14.2.35",
     "next-auth": "^4.24.5",
     "next-cloudinary": "^6.16.0",
     "react": "^18.2.0",
