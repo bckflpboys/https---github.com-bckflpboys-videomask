@@ -1,0 +1,62 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" width="512" height="512">
+  <defs>
+    <!-- Teal Gradient -->
+    <linearGradient id="vmTeal" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#5DE2E0"/>
+      <stop offset="100%" stop-color="#31AAA9"/>
+    </linearGradient>
+
+    <!-- Crimson to Burgundy Gradient -->
+    <linearGradient id="vmCrimson" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#D83434"/>
+      <stop offset="60%" stop-color="#A82020"/>
+      <stop offset="100%" stop-color="#6C1A1A"/>
+    </linearGradient>
+
+    <!-- Warm Champagne Gold Gradient -->
+    <linearGradient id="vmGold" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FFF9EA"/>
+      <stop offset="100%" stop-color="#F8E0A4"/>
+    </linearGradient>
+
+    <!-- Badge Background Gradient -->
+    <linearGradient id="vmBadgeBg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#220909"/>
+      <stop offset="100%" stop-color="#100303"/>
+    </linearGradient>
+  </defs>
+
+  
+  <!-- Sleek Squircle Icon Badge -->
+  <rect x="4" y="4" width="120" height="120" rx="30" fill="url(#vmBadgeBg)"/>
+  <rect x="4" y="4" width="120" height="120" rx="30" fill="none" stroke="#6C1A1A" stroke-width="1.5" opacity="0.6"/>
+  <rect x="4" y="4" width="120" height="120" rx="30" fill="none" stroke="#F8E0A4" stroke-width="0.75" opacity="0.25"/>
+  
+
+  <!-- Upper Visor Wing (Teal #31AAA9) -->
+  <!-- A dynamic aerodynamic visor wing forming the top half of the Play arrow -->
+  <path d="M 34 26
+           C 34 21, 39 18, 44 21
+           L 99 53
+           C 105 56.5, 105 62.5, 99 64
+           L 50 64
+           C 42 64, 34 57, 34 49
+           Z"
+        fill="url(#vmTeal)"/>
+
+  <!-- Lower Mask Chin Plate (Crimson #A82020 -> Burgundy #6C1A1A) -->
+  <!-- An angular stealth mask jaw forming the bottom half of the Play arrow -->
+  <path d="M 34 72
+           C 34 64, 42 57, 50 57
+           L 99 57
+           C 105 58.5, 105 64.5, 99 68
+           L 44 100
+           C 39 103, 34 100, 34 95
+           Z"
+        fill="url(#vmCrimson)"/>
+
+  <!-- Center Mask Visor Slit Accent (Champagne Gold #F8E0A4) -->
+  <!-- The glowing optical lens / camera aperture sensor nestled in the mask -->
+  <circle cx="50" cy="60.5" r="5" fill="url(#vmGold)"/>
+  <rect x="61" cy="59" y="59" width="30" height="3" rx="1.5" fill="url(#vmGold)"/>
+</svg>

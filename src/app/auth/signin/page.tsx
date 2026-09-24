@@ -4,6 +4,8 @@ import { useState } from 'react';
 import { signIn } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import Logo from '@/components/Logo';
+import { FiMail, FiLock, FiArrowLeft, FiAlertCircle } from 'react-icons/fi';
 
 export default function SignIn() {
   const router = useRouter();
@@ -27,11 +29,13 @@ export default function SignIn() {
       });
 
       if (result?.error) {
-        setError(result.error);
+        setError('Invalid email or password');
       } else {
         router.push('/dashboard');
+        router.refresh();
       }
-    } catch (error) {
+    } catch (err) {
+      console.error(err);
       setError('An error occurred. Please try again.');
     } finally {
       setIsLoading(false);
@@ -39,96 +43,108 @@ export default function SignIn() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-b from-gray-50 to-gray-100 py-12 px-4 sm:px-6 lg:px-8">
-      <div className="absolute top-8 left-8">
-        <Link href="/" className="flex items-center space-x-2">
-          <div className="w-8 h-8 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-lg flex items-center justify-center">
-            <span className="text-white font-bold">V</span>
-          </div>
-          <span className="text-xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
-            VideoMask
-          </span>
+    <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-b from-[#FAF9F6] via-white to-[#F5F2EB] py-12 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
+      {/* Background ambient lighting */}
+      <div className="absolute top-0 left-1/4 w-[500px] h-[500px] bg-[#31AAA9]/10 rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute bottom-0 right-1/4 w-[500px] h-[500px] bg-[#A82020]/10 rounded-full blur-3xl pointer-events-none" />
+
+      {/* Top back navigation */}
+      <div className="absolute top-6 left-6 z-20">
+        <Link 
+          href="/" 
+          className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-white/80 backdrop-blur-md border border-black/[0.08] text-xs font-semibold text-gray-700 hover:text-black transition-all shadow-xs"
+        >
+          <FiArrowLeft className="w-3.5 h-3.5" />
+          <span>Back to Home</span>
         </Link>
       </div>
 
-      <div className="max-w-md w-full">
-        <div className="bg-white rounded-2xl shadow-xl p-8 space-y-8">
-          <div className="text-center">
-            <h2 className="text-3xl font-extrabold text-gray-900 mb-2">
-              Welcome back
+      <div className="max-w-md w-full relative z-10">
+        <div className="apple-card p-8 sm:p-10 space-y-6 shadow-[0_20px_50px_rgba(24,6,6,0.08)] bg-white/90">
+          
+          <div className="text-center space-y-2">
+            <div className="flex justify-center mb-4">
+              <Logo size="lg" />
+            </div>
+            <h2 className="text-2xl sm:text-3xl font-black text-[#180606] tracking-tight">
+              Sign in to Studio
             </h2>
-            <p className="text-gray-600">
-              Sign in to your account to continue
+            <p className="text-xs sm:text-sm text-gray-500">
+              Access your cloaked videos, device profiles, and API keys
             </p>
           </div>
 
-          <form className="space-y-6" onSubmit={handleSubmit}>
-            <div className="space-y-5">
-              <div>
-                <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
-                  Email address
-                </label>
+          <form className="space-y-4" onSubmit={handleSubmit}>
+            <div>
+              <label htmlFor="email" className="block text-xs font-bold text-gray-700 uppercase tracking-wide mb-1.5">
+                Email Address
+              </label>
+              <div className="relative">
+                <FiMail className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4" />
                 <input
                   id="email"
                   name="email"
                   type="email"
                   autoComplete="email"
                   required
-                  className="appearance-none block w-full px-4 py-3 border border-gray-300 rounded-xl shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  placeholder="Enter your email"
+                  className="w-full pl-10 pr-4 py-3 bg-[#F8F7F3] border border-black/10 rounded-2xl text-xs sm:text-sm focus:ring-2 focus:ring-[#31AAA9] focus:outline-none transition-all"
+                  placeholder="name@example.com"
                 />
               </div>
-              <div>
-                <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
-                  Password
-                </label>
+            </div>
+
+            <div>
+              <label htmlFor="password" className="block text-xs font-bold text-gray-700 uppercase tracking-wide mb-1.5">
+                Password
+              </label>
+              <div className="relative">
+                <FiLock className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4" />
                 <input
                   id="password"
                   name="password"
                   type="password"
                   autoComplete="current-password"
                   required
-                  className="appearance-none block w-full px-4 py-3 border border-gray-300 rounded-xl shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  placeholder="Enter your password"
+                  className="w-full pl-10 pr-4 py-3 bg-[#F8F7F3] border border-black/10 rounded-2xl text-xs sm:text-sm focus:ring-2 focus:ring-[#31AAA9] focus:outline-none transition-all"
+                  placeholder="••••••••"
                 />
               </div>
             </div>
 
             {error && (
-              <div className="bg-red-50 text-red-500 text-sm rounded-lg p-3 text-center">
-                {error}
+              <div className="p-3 rounded-2xl bg-[#A82020]/10 border border-[#A82020]/20 text-[#A82020] text-xs font-semibold flex items-center gap-2">
+                <FiAlertCircle className="w-4 h-4 flex-shrink-0" />
+                <span>{error}</span>
               </div>
             )}
 
-            <div>
+            <div className="pt-2">
               <button
                 type="submit"
                 disabled={isLoading}
-                className="w-full flex justify-center py-3 px-4 border border-transparent rounded-xl shadow-sm text-sm font-semibold text-white bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="w-full btn-primary !py-3.5 !rounded-full text-xs sm:text-sm shadow-md"
               >
                 {isLoading ? (
-                  <div className="flex items-center">
-                    <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                    </svg>
-                    Signing in...
-                  </div>
+                  <span className="flex items-center justify-center gap-2">
+                    <span className="w-4 h-4 rounded-full border-2 border-white/30 border-t-white animate-spin" />
+                    <span>Signing in...</span>
+                  </span>
                 ) : (
-                  'Sign in'
+                  'Sign In to VideoMask'
                 )}
               </button>
             </div>
           </form>
 
-          <div className="text-center">
-            <p className="text-sm text-gray-600">
-              Don't have an account?{' '}
-              <Link href="/auth/signup" className="font-medium text-blue-600 hover:text-blue-500 transition-colors">
-                Sign up
+          <div className="text-center pt-4 border-t border-black/[0.05]">
+            <p className="text-xs text-gray-500">
+              New to VideoMask?{' '}
+              <Link href="/auth/signup" className="font-bold text-[#A82020] hover:underline">
+                Create free account
               </Link>
             </p>
           </div>
+
         </div>
       </div>
     </div>

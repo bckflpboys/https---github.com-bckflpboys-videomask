@@ -1,0 +1,57 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 110" width="480" height="110">
+  <defs>
+    <linearGradient id="hTeal" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#5DE2E0"/>
+      <stop offset="100%" stop-color="#31AAA9"/>
+    </linearGradient>
+    <linearGradient id="hCrimson" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#D83434"/>
+      <stop offset="60%" stop-color="#A82020"/>
+      <stop offset="100%" stop-color="#6C1A1A"/>
+    </linearGradient>
+    <linearGradient id="hGold" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FFF9EA"/>
+      <stop offset="100%" stop-color="#F8E0A4"/>
+    </linearGradient>
+    <linearGradient id="hBadge" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#240909"/>
+      <stop offset="100%" stop-color="#120404"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Left Icon Emblem (Scale 0.72) -->
+  <g transform="translate(10, 10) scale(0.70)">
+    <rect x="4" y="4" width="120" height="120" rx="30" fill="url(#hBadge)"/>
+    <rect x="4" y="4" width="120" height="120" rx="30" fill="none" stroke="#6C1A1A" stroke-width="1.5" opacity="0.6"/>
+    <rect x="4" y="4" width="120" height="120" rx="30" fill="none" stroke="#F8E0A4" stroke-width="0.75" opacity="0.25"/>
+
+    <path d="M 34 26 C 34 21, 39 18, 44 21 L 99 53 C 105 56.5, 105 62.5, 99 64 L 50 64 C 42 64, 34 57, 34 49 Z" fill="url(#hTeal)"/>
+    <path d="M 34 72 C 34 64, 42 57, 50 57 L 99 57 C 105 58.5, 105 64.5, 99 68 L 44 100 C 39 103, 34 100, 34 95 Z" fill="url(#hCrimson)"/>
+    <circle cx="50" cy="60.5" r="5" fill="url(#hGold)"/>
+    <rect x="61" y="59" width="30" height="3" rx="1.5" fill="url(#hGold)"/>
+  </g>
+
+  <!-- Brand Typography -->
+  <g transform="translate(112, 60)">
+    <text font-family="system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" 
+          font-weight="800" 
+          font-size="36" 
+          letter-spacing="-0.5">
+      <tspan fill="#FFFFFF">Video</tspan><tspan fill="#A82020">Mask</tspan>
+    </text>
+    <!-- Dot in Teal -->
+    <circle cx="188" cy="-10" r="3.5" fill="#31AAA9"/>
+  </g>
+
+  <!-- Subtitle Tag: Metadata Shield -->
+  <g transform="translate(114, 73)">
+    <rect x="0" y="0" width="148" height="18" rx="4" fill="#260B0B" stroke="rgba(248, 224, 164, 0.25)" stroke-width="1"/>
+    <circle cx="8" cy="9" r="2.5" fill="#31AAA9"/>
+    <text x="17" y="12.5" 
+          font-family="system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" 
+          font-size="8.5" 
+          font-weight="700" 
+          letter-spacing="1.5" 
+          fill="#F8E0A4">METADATA SHIELD</text>
+  </g>
+</svg>

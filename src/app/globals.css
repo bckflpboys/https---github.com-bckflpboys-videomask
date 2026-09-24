@@ -3,9 +3,13 @@
 @tailwind utilities;
 
 :root {
-  --background: 0 0% 100%;
-  --foreground: 222.2 84% 4.9%;
-  --border: 214.3 31.8% 91.4%;
+  --background: 40 33% 98%;
+  --foreground: 0 0% 12%;
+  --border: 35 25% 90%;
+  --brand-teal: #31AAA9;
+  --brand-gold: #F8E0A4;
+  --brand-crimson: #A82020;
+  --brand-burgundy: #6C1A1A;
 }
 
 @layer base {
@@ -13,60 +17,113 @@
     @apply border-[hsl(var(--border))];
   }
   html {
-    @apply h-full;
+    @apply h-full scroll-smooth;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
   body {
-    @apply h-full bg-background text-foreground;
+    @apply h-full bg-[#FAF9F6] text-[#180606] antialiased selection:bg-[#31AAA9]/20 selection:text-[#180606];
+    font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
   }
 }
 
 @layer components {
+  /* Apple iOS Buttons */
   .btn-primary {
-    @apply px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 
-    transition-all duration-200 shadow-lg hover:shadow-xl font-semibold;
+    @apply px-6 py-3 bg-gradient-to-r from-[#31AAA9] to-[#208382] text-white rounded-full 
+    hover:from-[#299594] hover:to-[#186A69] transition-all duration-200 
+    shadow-[0_4px_20px_rgba(49,170,169,0.35)] hover:shadow-[0_8px_28px_rgba(49,170,169,0.45)] 
+    hover:-translate-y-0.5 active:translate-y-0 font-semibold inline-flex items-center justify-center gap-2;
+  }
+
+  .btn-accent {
+    @apply px-6 py-3 bg-gradient-to-r from-[#A82020] to-[#6C1A1A] text-white rounded-full 
+    hover:from-[#8D1818] hover:to-[#551313] transition-all duration-200 
+    shadow-[0_4px_20px_rgba(168,32,32,0.3)] hover:shadow-[0_8px_28px_rgba(168,32,32,0.4)] 
+    hover:-translate-y-0.5 active:translate-y-0 font-semibold inline-flex items-center justify-center gap-2;
   }
 
   .btn-secondary {
-    @apply px-6 py-3 bg-white text-gray-900 rounded-lg hover:bg-gray-50 
-    transition-all duration-200 shadow-md hover:shadow-lg border border-gray-200 
-    font-semibold;
+    @apply px-6 py-3 bg-white text-gray-800 rounded-full hover:bg-gray-50 
+    transition-all duration-200 shadow-[0_2px_10px_rgba(0,0,0,0.04)] hover:shadow-[0_6px_20px_rgba(0,0,0,0.08)] 
+    border border-black/[0.08] hover:border-[#31AAA9]/40 font-semibold inline-flex items-center justify-center gap-2;
+  }
+
+  .btn-ghost {
+    @apply px-4 py-2 text-gray-600 hover:text-black rounded-full hover:bg-black/[0.04] transition-all duration-150 font-medium;
+  }
+
+  /* Apple Glass & Card Containers */
+  .apple-card {
+    @apply bg-white/80 backdrop-blur-xl border border-black/[0.06] rounded-[28px] 
+    shadow-[0_8px_30px_rgba(0,0,0,0.04)] hover:shadow-[0_16px_40px_rgba(49,170,169,0.1)] 
+    transition-all duration-300;
+  }
+
+  .apple-card-dark {
+    @apply bg-[#180606]/95 backdrop-blur-xl border border-[#F8E0A4]/20 rounded-[28px] 
+    shadow-[0_20px_50px_rgba(0,0,0,0.3)] text-white;
+  }
+
+  .apple-segmented-bar {
+    @apply p-1.5 bg-[#EEEDE9] rounded-full inline-flex items-center gap-1 border border-black/[0.05];
+  }
+
+  .apple-segmented-item {
+    @apply px-4 py-2 rounded-full text-xs font-semibold transition-all duration-200;
+  }
+
+  .apple-segmented-active {
+    @apply bg-white text-[#180606] shadow-[0_2px_8px_rgba(0,0,0,0.08)];
+  }
+
+  .apple-segmented-inactive {
+    @apply text-gray-600 hover:text-black hover:bg-white/50;
   }
 
   .card {
-    @apply bg-white rounded-xl shadow-lg hover:shadow-xl transition-shadow 
-    duration-300 border border-gray-100;
+    @apply bg-white rounded-[24px] shadow-sm hover:shadow-xl transition-all 
+    duration-300 border border-gray-200/80;
+  }
+
+  .card-glow {
+    @apply relative bg-white/95 backdrop-blur-md rounded-[28px] shadow-lg 
+    border border-[#F8E0A4]/40 hover:border-[#31AAA9]/50 transition-all duration-300;
+  }
+
+  .tag-badge {
+    @apply inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold tracking-wider uppercase
+    bg-[#6C1A1A] text-[#F8E0A4] border border-[#F8E0A4]/30 shadow-sm;
   }
 }
 
 @layer utilities {
   .bg-background {
-    /* Add your custom styles here */
-    background-color: #f0f0f0; /* Example color */
+    background-color: #FAF9F6;
   }
   .text-foreground {
-    /* Add your custom styles here */
-    color: #333333; /* Example color */
+    color: #1A1A1A;
   }
 
   @keyframes highlight-border {
     0% {
-      border-color: #bfdbfe; /* blue-200 */
+      border-color: #F8E0A4;
       transform: scale(1);
     }
     15% {
-      border-color: #3b82f6; /* blue-500 */
-      border-width: 3px;
-      background-color: #eff6ff; /* blue-50 */
-      transform: scale(1.02);
+      border-color: #31AAA9;
+      border-width: 2px;
+      background-color: #F0FAF9;
+      transform: scale(1.01);
     }
     30% {
       transform: scale(1);
     }
     45% {
-      transform: scale(1.01);
+      transform: scale(1.005);
     }
     100% {
-      border-color: #bfdbfe; /* blue-200 */
+      border-color: #F8E0A4;
       transform: scale(1);
     }
   }

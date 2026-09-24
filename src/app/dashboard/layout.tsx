@@ -16,9 +16,9 @@ export default function DashboardLayout({
   }
 
   return (
-    <div className="min-h-screen bg-gray-100">
+    <div className="min-h-screen bg-[#FAF9F6]">
       <Navbar />
-      <div className="pt-16">
+      <div className="pt-20 pb-16">
         {children}
       </div>
     </div>
