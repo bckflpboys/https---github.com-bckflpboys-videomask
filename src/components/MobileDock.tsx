@@ -16,7 +16,7 @@ export default function MobileDock() {
     { label: 'Upload', href: '/upload', icon: FiUploadCloud, isActive: pathname === '/upload', highlight: true },
     { label: 'Features', href: '/#features', icon: FiSliders, isActive: pathname === '/#features' },
     { 
-      label: session ? 'Dashboard' : 'Sign In', 
+      label: session ? 'Account' : 'Sign In', 
       href: session ? '/dashboard' : '/auth/signin', 
       icon: FiUser, 
       isActive: pathname.startsWith('/dashboard') || pathname.startsWith('/auth') 
@@ -26,31 +26,29 @@ export default function MobileDock() {
   return (
     <div className="fixed bottom-4 left-4 right-4 z-50 md:hidden pointer-events-none">
       <div className="mx-auto max-w-sm pointer-events-auto">
-        <nav className="flex items-center justify-around px-3 py-2.5 bg-white/90 backdrop-blur-2xl rounded-[32px] border border-black/[0.08] shadow-[0_12px_36px_rgba(24,6,6,0.12),0_2px_8px_rgba(0,0,0,0.06)]">
+        <nav className="flex items-center justify-around px-2 py-2 bg-white/90 backdrop-blur-2xl rounded-2xl border border-black/[0.05] shadow-[0_4px_30px_rgba(0,0,0,0.08)]">
           {navItems.map((item) => {
             const Icon = item.icon;
             return (
               <Link
                 key={item.label}
                 href={item.href}
-                className={`relative flex flex-col items-center justify-center py-1 px-3 rounded-2xl transition-all duration-200 ${
+                className={`relative flex flex-col items-center justify-center py-1.5 px-3 rounded-xl transition-all duration-200 active:scale-[0.92] ${
                   item.highlight
                     ? 'text-white'
                     : item.isActive
                     ? 'text-[#31AAA9]'
-                    : 'text-gray-500 hover:text-[#180606]'
+                    : 'text-gray-400 hover:text-[#180606]'
                 }`}
               >
                 {item.highlight ? (
-                  <div className="w-10 h-10 -mt-5 rounded-full bg-gradient-to-tr from-[#A82020] via-[#31AAA9] to-[#31AAA9] p-0.5 shadow-[0_6px_20px_rgba(49,170,169,0.4)] flex items-center justify-center">
-                    <div className="w-full h-full bg-[#180606] rounded-full flex items-center justify-center">
-                      <Icon className="w-5 h-5 text-[#F8E0A4]" />
-                    </div>
+                  <div className="w-11 h-11 -mt-5 rounded-2xl bg-gradient-to-br from-[#31AAA9] to-[#208382] shadow-[0_4px_16px_rgba(49,170,169,0.4)] flex items-center justify-center">
+                    <Icon className="w-5 h-5 text-white" />
                   </div>
                 ) : (
                   <>
                     <Icon className="w-5 h-5" />
-                    <span className="text-[10px] font-semibold mt-1 tracking-tight">
+                    <span className="text-[10px] font-semibold mt-0.5 tracking-tight">
                       {item.label}
                     </span>
                     {item.isActive && (

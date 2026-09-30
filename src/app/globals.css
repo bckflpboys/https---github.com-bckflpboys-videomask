@@ -10,6 +10,12 @@
   --brand-gold: #F8E0A4;
   --brand-crimson: #A82020;
   --brand-burgundy: #6C1A1A;
+  --ios-radius: 20px;
+  --ios-radius-lg: 28px;
+  --ios-radius-xl: 36px;
+  --ios-spacing: 16px;
+  --ios-spacing-lg: 24px;
+  --ios-spacing-xl: 40px;
 }
 
 @layer base {
@@ -22,7 +28,7 @@
     -moz-osx-font-smoothing: grayscale;
   }
   body {
-    @apply h-full bg-[#FAF9F6] text-[#180606] antialiased selection:bg-[#31AAA9]/20 selection:text-[#180606];
+    @apply h-full bg-[#F2F1ED] text-[#180606] antialiased selection:bg-[#31AAA9]/20 selection:text-[#180606];
     font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
   }
 }
@@ -30,79 +36,129 @@
 @layer components {
   /* Apple iOS Buttons */
   .btn-primary {
-    @apply px-6 py-3 bg-gradient-to-r from-[#31AAA9] to-[#208382] text-white rounded-full 
-    hover:from-[#299594] hover:to-[#186A69] transition-all duration-200 
-    shadow-[0_4px_20px_rgba(49,170,169,0.35)] hover:shadow-[0_8px_28px_rgba(49,170,169,0.45)] 
-    hover:-translate-y-0.5 active:translate-y-0 font-semibold inline-flex items-center justify-center gap-2;
+    @apply px-6 py-3 bg-gradient-to-r from-[#31AAA9] to-[#208382] text-white rounded-2xl
+    hover:from-[#299594] hover:to-[#186A69] transition-all duration-300
+    shadow-[0_4px_20px_rgba(49,170,169,0.35)] hover:shadow-[0_8px_28px_rgba(49,170,169,0.45)]
+    hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.98] font-semibold inline-flex items-center justify-center gap-2;
   }
 
   .btn-accent {
-    @apply px-6 py-3 bg-gradient-to-r from-[#A82020] to-[#6C1A1A] text-white rounded-full 
-    hover:from-[#8D1818] hover:to-[#551313] transition-all duration-200 
-    shadow-[0_4px_20px_rgba(168,32,32,0.3)] hover:shadow-[0_8px_28px_rgba(168,32,32,0.4)] 
-    hover:-translate-y-0.5 active:translate-y-0 font-semibold inline-flex items-center justify-center gap-2;
+    @apply px-6 py-3 bg-gradient-to-r from-[#A82020] to-[#6C1A1A] text-white rounded-2xl
+    hover:from-[#8D1818] hover:to-[#551313] transition-all duration-300
+    shadow-[0_4px_20px_rgba(168,32,32,0.3)] hover:shadow-[0_8px_28px_rgba(168,32,32,0.4)]
+    hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.98] font-semibold inline-flex items-center justify-center gap-2;
   }
 
   .btn-secondary {
-    @apply px-6 py-3 bg-white text-gray-800 rounded-full hover:bg-gray-50 
-    transition-all duration-200 shadow-[0_2px_10px_rgba(0,0,0,0.04)] hover:shadow-[0_6px_20px_rgba(0,0,0,0.08)] 
-    border border-black/[0.08] hover:border-[#31AAA9]/40 font-semibold inline-flex items-center justify-center gap-2;
+    @apply px-6 py-3 bg-white text-gray-800 rounded-2xl hover:bg-gray-50
+    transition-all duration-300 shadow-[0_2px_10px_rgba(0,0,0,0.04)] hover:shadow-[0_6px_20px_rgba(0,0,0,0.08)]
+    border border-black/[0.08] hover:border-[#31AAA9]/40 font-semibold inline-flex items-center justify-center gap-2
+    active:scale-[0.98];
   }
 
   .btn-ghost {
-    @apply px-4 py-2 text-gray-600 hover:text-black rounded-full hover:bg-black/[0.04] transition-all duration-150 font-medium;
+    @apply px-4 py-2 text-gray-600 hover:text-black rounded-2xl hover:bg-black/[0.04] transition-all duration-200 font-medium active:scale-[0.98];
+  }
+
+  /* iOS-style Section Cards */
+  .ios-section {
+    @apply bg-white rounded-[var(--ios-radius-xl)] shadow-[0_2px_20px_rgba(0,0,0,0.04)] border border-black/[0.04];
+  }
+
+  .ios-section-inset {
+    @apply bg-[#F7F6F3] rounded-[var(--ios-radius)] border border-black/[0.04];
   }
 
   /* Apple Glass & Card Containers */
   .apple-card {
-    @apply bg-white/80 backdrop-blur-xl border border-black/[0.06] rounded-[28px] 
-    shadow-[0_8px_30px_rgba(0,0,0,0.04)] hover:shadow-[0_16px_40px_rgba(49,170,169,0.1)] 
-    transition-all duration-300;
+    @apply bg-white/90 backdrop-blur-xl border border-black/[0.05] rounded-[var(--ios-radius-lg)]
+    shadow-[0_2px_20px_rgba(0,0,0,0.04)] hover:shadow-[0_8px_30px_rgba(0,0,0,0.06)]
+    transition-all duration-400;
   }
 
   .apple-card-dark {
-    @apply bg-[#180606]/95 backdrop-blur-xl border border-[#F8E0A4]/20 rounded-[28px] 
+    @apply bg-[#180606]/95 backdrop-blur-xl border border-[#F8E0A4]/20 rounded-[var(--ios-radius-lg)]
     shadow-[0_20px_50px_rgba(0,0,0,0.3)] text-white;
   }
 
   .apple-segmented-bar {
-    @apply p-1.5 bg-[#EEEDE9] rounded-full inline-flex items-center gap-1 border border-black/[0.05];
+    @apply p-1 bg-[#EEEDE9] rounded-xl inline-flex items-center gap-0.5 border border-black/[0.04];
   }
 
   .apple-segmented-item {
-    @apply px-4 py-2 rounded-full text-xs font-semibold transition-all duration-200;
+    @apply px-4 py-2 rounded-[10px] text-[13px] font-semibold transition-all duration-200;
   }
 
   .apple-segmented-active {
-    @apply bg-white text-[#180606] shadow-[0_2px_8px_rgba(0,0,0,0.08)];
+    @apply bg-white text-[#180606] shadow-[0_1px_4px_rgba(0,0,0,0.08),0_0_1px_rgba(0,0,0,0.04)];
   }
 
   .apple-segmented-inactive {
-    @apply text-gray-600 hover:text-black hover:bg-white/50;
+    @apply text-gray-500 hover:text-black hover:bg-white/40;
   }
 
   .card {
-    @apply bg-white rounded-[24px] shadow-sm hover:shadow-xl transition-all 
-    duration-300 border border-gray-200/80;
+    @apply bg-white rounded-[var(--ios-radius-lg)] shadow-sm hover:shadow-lg transition-all
+    duration-400 border border-black/[0.04];
   }
 
   .card-glow {
-    @apply relative bg-white/95 backdrop-blur-md rounded-[28px] shadow-lg 
-    border border-[#F8E0A4]/40 hover:border-[#31AAA9]/50 transition-all duration-300;
+    @apply relative bg-white/95 backdrop-blur-md rounded-[var(--ios-radius-lg)] shadow-lg
+    border border-[#F8E0A4]/40 hover:border-[#31AAA9]/50 transition-all duration-400;
   }
 
   .tag-badge {
     @apply inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold tracking-wider uppercase
     bg-[#6C1A1A] text-[#F8E0A4] border border-[#F8E0A4]/30 shadow-sm;
   }
+
+  /* iOS-style list rows */
+  .ios-row {
+    @apply flex items-center justify-between py-3.5 px-4 bg-white rounded-2xl border border-black/[0.04] transition-all duration-200 hover:bg-gray-50/80 active:scale-[0.99];
+  }
+
+  /* iOS toggle switch */
+  .ios-toggle {
+    @apply relative w-[51px] h-[31px] rounded-full transition-all duration-300 cursor-pointer flex-shrink-0;
+  }
+
+  .ios-toggle-on {
+    @apply bg-[#31AAA9];
+  }
+
+  .ios-toggle-off {
+    @apply bg-gray-300;
+  }
+
+  .ios-toggle-knob {
+    @apply absolute top-[2px] w-[27px] h-[27px] rounded-full bg-white shadow-[0_2px_4px_rgba(0,0,0,0.15)] transition-all duration-300;
+  }
+
+  /* Stat card */
+  .stat-card {
+    @apply bg-white rounded-[var(--ios-radius)] p-5 border border-black/[0.04] transition-all duration-300 hover:shadow-md;
+  }
 }
 
 @layer utilities {
   .bg-background {
-    background-color: #FAF9F6;
+    background-color: #F2F1ED;
   }
   .text-foreground {
     color: #1A1A1A;
+  }
+
+  .duration-400 {
+    transition-duration: 400ms;
+  }
+
+  /* Hide scrollbar for horizontal scroll areas */
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
   }
 
   @keyframes highlight-border {
@@ -131,4 +187,33 @@
   .animate-highlight {
     animation: highlight-border 1s ease-out;
   }
+
+  @keyframes float {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-6px); }
+  }
+
+  .animate-float {
+    animation: float 4s ease-in-out infinite;
+  }
+
+  @keyframes fade-in-up {
+    from {
+      opacity: 0;
+      transform: translateY(16px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .animate-fade-in-up {
+    animation: fade-in-up 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  }
+
+  .animation-delay-100 { animation-delay: 100ms; }
+  .animation-delay-200 { animation-delay: 200ms; }
+  .animation-delay-300 { animation-delay: 300ms; }
+  .animation-delay-400 { animation-delay: 400ms; }
 }

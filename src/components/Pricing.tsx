@@ -80,37 +80,34 @@ export default function Pricing() {
   const [billingCycle, setBillingCycle] = useState<'monthly' | 'annual'>('annual');
 
   return (
-    <section className="py-24 bg-gradient-to-b from-[#FAF9F6] to-white relative overflow-hidden" id="pricing">
-      {/* Subtle ambient lighting */}
-      <div className="absolute top-10 left-1/3 w-[600px] h-[600px] bg-[#31AAA9]/8 rounded-full blur-3xl pointer-events-none" />
-      <div className="absolute bottom-10 right-1/4 w-[600px] h-[600px] bg-[#F8E0A4]/15 rounded-full blur-3xl pointer-events-none" />
+    <section className="py-16 sm:py-24 relative overflow-hidden" id="pricing">
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 relative z-10">
         
         {/* Header */}
-        <div className="text-center max-w-3xl mx-auto mb-12 space-y-4">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-white border border-black/[0.08] text-[#180606] shadow-xs text-xs font-semibold">
+        <div className="text-center max-w-2xl mx-auto mb-10">
+          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/80 border border-black/[0.06] text-[#180606] shadow-sm text-xs font-semibold mb-5">
             <span className="w-1.5 h-1.5 rounded-full bg-[#31AAA9]" />
-            <span>Transparent Licensing</span>
+            <span>Pricing</span>
           </div>
 
-          <h2 className="text-3xl sm:text-5xl font-black text-[#180606] tracking-tight">
-            Designed for Solo Creators & Global Studios
+          <h2 className="text-3xl sm:text-[2.75rem] font-black text-[#180606] tracking-tight leading-tight mb-3">
+            Choose Your Plan
           </h2>
-          <p className="text-sm sm:text-base text-gray-600 max-w-2xl mx-auto">
-            Choose the plan that fits your posting volume. Zero lock-in, cancel anytime with one click.
+          <p className="text-sm sm:text-base text-gray-500 max-w-lg mx-auto mb-6">
+            Zero lock-in. Cancel anytime.
           </p>
 
           {/* Billing Switcher */}
-          <div className="pt-3 flex justify-center">
-            <div className="apple-segmented-bar p-1 shadow-xs">
+          <div className="inline-flex">
+            <div className="apple-segmented-bar">
               <button
                 onClick={() => setBillingCycle('monthly')}
                 className={`apple-segmented-item ${
                   billingCycle === 'monthly' ? 'apple-segmented-active' : 'apple-segmented-inactive'
                 }`}
               >
-                Monthly Billing
+                Monthly
               </button>
               <button
                 onClick={() => setBillingCycle('annual')}
@@ -118,83 +115,87 @@ export default function Pricing() {
                   billingCycle === 'annual' ? 'apple-segmented-active' : 'apple-segmented-inactive'
                 }`}
               >
-                <span>Annual Billing</span>
-                <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-[#31AAA9]/15 text-[#31AAA9]">
-                  SAVE 25%
+                <span>Annual</span>
+                <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-md bg-[#31AAA9]/15 text-[#31AAA9]">
+                  -25%
                 </span>
               </button>
             </div>
           </div>
         </div>
 
-        {/* Pricing Cards Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-7xl mx-auto items-stretch">
+        {/* Pricing Cards — iOS Grouped Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 max-w-5xl mx-auto items-start">
           {plans.map((plan) => {
             const price = billingCycle === 'annual' ? plan.annualPrice : plan.monthlyPrice;
 
             return (
               <div
                 key={plan.name}
-                className={`relative rounded-[32px] flex flex-col transition-all duration-300 ${
+                className={`relative ios-section overflow-hidden transition-all duration-400 ${
                   plan.popular
-                    ? 'bg-white border-2 border-[#31AAA9] shadow-[0_20px_50px_rgba(49,170,169,0.18)] scale-102 sm:scale-105 z-10'
-                    : 'apple-card p-8'
+                    ? 'ring-2 ring-[#31AAA9] shadow-[0_8px_40px_rgba(49,170,169,0.12)] md:scale-[1.03] z-10'
+                    : ''
                 }`}
               >
-                {/* Popular Pill */}
+                {/* Popular Ribbon */}
                 {plan.popular && (
-                  <div className="absolute -top-3.5 left-1/2 -translate-x-1/2">
-                    <span className="inline-flex items-center gap-1 px-3.5 py-1 rounded-full text-[11px] font-bold bg-[#180606] text-[#F8E0A4] border border-[#F8E0A4]/40 shadow-md uppercase tracking-wider">
-                      <FiStar className="w-3 h-3 text-[#31AAA9] fill-[#31AAA9]" />
-                      <span>{plan.badge}</span>
-                    </span>
-                  </div>
+                  <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-[#31AAA9] to-[#208382]" />
                 )}
 
-                <div className={`h-full flex flex-col justify-between ${plan.popular ? 'p-8' : ''}`}>
-                  <div>
-                    <h3 className="text-xl font-bold text-[#180606]">{plan.name}</h3>
-                    <p className="text-xs text-gray-500 mt-1 mb-6 leading-relaxed">
-                      {plan.description}
-                    </p>
-
-                    {/* Price display */}
-                    <div className="flex items-baseline mb-6 pb-6 border-b border-black/[0.06]">
-                      <span className="text-4xl sm:text-5xl font-black text-[#180606] tracking-tight">
-                        {price}
+                <div className="p-6 sm:p-7">
+                  {/* Plan Name & Badge */}
+                  <div className="flex items-center justify-between mb-4">
+                    <h3 className="text-lg font-bold text-[#180606]">{plan.name}</h3>
+                    {plan.popular && (
+                      <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-[10px] font-bold bg-[#31AAA9]/10 text-[#31AAA9] uppercase tracking-wider">
+                        <FiStar className="w-3 h-3 fill-[#31AAA9]" />
+                        Popular
                       </span>
-                      {plan.period && (
-                        <span className="text-gray-500 text-xs font-semibold ml-2">
-                          {plan.period}
-                        </span>
-                      )}
-                    </div>
-
-                    {/* Feature list */}
-                    <ul className="space-y-3.5 mb-8 text-left">
-                      {plan.features.map((feature) => (
-                        <li key={feature.id} className="flex items-start text-xs sm:text-sm text-gray-700">
-                          <div className="w-5 h-5 rounded-full bg-[#31AAA9]/15 text-[#31AAA9] flex items-center justify-center mr-3 mt-0.5 flex-shrink-0">
-                            <FiCheck className="w-3 h-3" />
-                          </div>
-                          <span>{feature.text}</span>
-                        </li>
-                      ))}
-                    </ul>
+                    )}
                   </div>
 
-                  <div>
-                    <Link
-                      href={plan.popular ? "/auth/signup" : "/auth/signin"}
-                      className={`block w-full py-3 px-6 text-center rounded-full font-bold text-xs sm:text-sm transition-all duration-200 ${
-                        plan.popular
-                          ? 'btn-primary'
-                          : 'btn-secondary'
-                      }`}
-                    >
-                      {plan.cta}
-                    </Link>
+                  {/* Price */}
+                  <div className="flex items-baseline mb-1">
+                    <span className="text-4xl font-black text-[#180606] tracking-tight">
+                      {price}
+                    </span>
+                    {plan.period && (
+                      <span className="text-gray-400 text-sm font-medium ml-1.5">
+                        {plan.period}
+                      </span>
+                    )}
                   </div>
+                  <p className="text-xs text-gray-400 mb-6">
+                    {plan.description}
+                  </p>
+
+                  {/* Divider */}
+                  <div className="h-px bg-black/[0.04] mb-5" />
+
+                  {/* Feature list */}
+                  <ul className="space-y-3 mb-7">
+                    {plan.features.map((feature) => (
+                      <li key={feature.id} className="flex items-start text-sm text-gray-600">
+                        <div className="w-5 h-5 rounded-full bg-[#31AAA9]/10 text-[#31AAA9] flex items-center justify-center mr-3 mt-0.5 flex-shrink-0">
+                          <FiCheck className="w-3 h-3" />
+                        </div>
+                        <span>{feature.text}</span>
+                      </li>
+                    ))}
+                  </ul>
+
+                  {/* CTA */}
+                  <Link
+                    href={plan.popular ? "/auth/signup" : "/auth/signin"}
+                    className={`block w-full py-3 px-6 text-center rounded-2xl font-bold text-sm transition-all duration-300 active:scale-[0.98] ${
+                      plan.popular
+                        ? 'btn-primary'
+                        : 'bg-[#F7F6F3] text-[#180606] hover:bg-gray-200/70'
+                    }`}
+                  >
+                    {plan.cta}
+                  </Link>
                 </div>
               </div>
             );

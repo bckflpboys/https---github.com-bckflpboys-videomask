@@ -18,7 +18,8 @@ import {
   FiLock, 
   FiCheckCircle, 
   FiLayers,
-  FiZap 
+  FiZap,
+  FiChevronDown
 } from 'react-icons/fi';
 
 type CategoryFilter = 'all' | 'sensor' | 'metadata' | 'security';
@@ -147,79 +148,60 @@ export default function Benefits() {
     setExpandedId(prev => prev === id ? null : id);
   };
 
-  return (
-    <section id="features" className="py-24 bg-[#FAF9F6] relative overflow-hidden">
-      {/* Subtle Apple Ambient Glows */}
-      <div className="absolute top-1/3 left-10 w-[500px] h-[500px] bg-[#31AAA9]/8 rounded-full blur-3xl pointer-events-none" />
-      <div className="absolute bottom-10 right-10 w-[500px] h-[500px] bg-[#A82020]/8 rounded-full blur-3xl pointer-events-none" />
+  const filterTabs = [
+    { id: 'all' as CategoryFilter, label: 'All', icon: FiLayers },
+    { id: 'sensor' as CategoryFilter, label: 'Sensors', icon: FiCpu },
+    { id: 'metadata' as CategoryFilter, label: 'EXIF & GPS', icon: FiSliders },
+    { id: 'security' as CategoryFilter, label: 'Privacy', icon: FiLock },
+  ];
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+  return (
+    <section id="features" className="py-16 sm:py-24 relative overflow-hidden">
+
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 relative z-10">
         
-        {/* Section Header */}
-        <div className="text-center mb-12 max-w-3xl mx-auto space-y-4">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-white border border-black/[0.08] text-[#180606] shadow-xs text-xs font-semibold">
+        {/* Section Header — Minimal */}
+        <div className="text-center mb-10 max-w-2xl mx-auto">
+          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/80 border border-black/[0.06] text-[#180606] shadow-sm text-xs font-semibold mb-5">
             <span className="w-1.5 h-1.5 rounded-full bg-[#31AAA9]" />
-            <span>Architecture & Physics</span>
-            <span className="text-gray-300">•</span>
-            <span className="text-[#A82020] font-bold">100% Native Emulation</span>
+            <span>Architecture</span>
           </div>
 
-          <h2 className="text-3xl sm:text-5xl font-black text-[#180606] tracking-tight">
-            Built Like an Apple Operating System.{' '}
-            <span className="bg-clip-text text-transparent bg-gradient-to-r from-[#A82020] via-[#C92A2A] to-[#31AAA9]">
-              Engineered for Creators.
+          <h2 className="text-3xl sm:text-[2.75rem] font-black text-[#180606] tracking-tight leading-tight mb-3">
+            Engineered for{' '}
+            <span className="bg-clip-text text-transparent bg-gradient-to-r from-[#A82020] to-[#31AAA9]">
+              Creators
             </span>
           </h2>
 
-          <p className="text-sm sm:text-base text-gray-600 leading-relaxed font-normal">
-            Every camera signature is mathematically calibrated to mirror real optical sensors, aperture mechanisms, and metadata atoms.
+          <p className="text-sm sm:text-base text-gray-500 leading-relaxed max-w-lg mx-auto">
+            Every camera signature is mathematically calibrated to mirror real optical sensors.
           </p>
+        </div>
 
-          {/* Segmented Filter Pills */}
-          <div className="pt-2 flex justify-center">
-            <div className="apple-segmented-bar p-1">
-              <button
-                onClick={() => setFilter('all')}
-                className={`apple-segmented-item flex items-center gap-1.5 ${
-                  filter === 'all' ? 'apple-segmented-active' : 'apple-segmented-inactive'
-                }`}
-              >
-                <FiLayers className="w-3.5 h-3.5" />
-                <span>All Capabilities</span>
-              </button>
-              <button
-                onClick={() => setFilter('sensor')}
-                className={`apple-segmented-item flex items-center gap-1.5 ${
-                  filter === 'sensor' ? 'apple-segmented-active' : 'apple-segmented-inactive'
-                }`}
-              >
-                <FiCpu className="w-3.5 h-3.5" />
-                <span>Sensors & Optics</span>
-              </button>
-              <button
-                onClick={() => setFilter('metadata')}
-                className={`apple-segmented-item flex items-center gap-1.5 ${
-                  filter === 'metadata' ? 'apple-segmented-active' : 'apple-segmented-inactive'
-                }`}
-              >
-                <FiSliders className="w-3.5 h-3.5" />
-                <span>EXIF & GPS</span>
-              </button>
-              <button
-                onClick={() => setFilter('security')}
-                className={`apple-segmented-item flex items-center gap-1.5 ${
-                  filter === 'security' ? 'apple-segmented-active' : 'apple-segmented-inactive'
-                }`}
-              >
-                <FiLock className="w-3.5 h-3.5" />
-                <span>Privacy Shield</span>
-              </button>
-            </div>
+        {/* Filter Pills */}
+        <div className="flex justify-center mb-8">
+          <div className="apple-segmented-bar">
+            {filterTabs.map((tab) => {
+              const Icon = tab.icon;
+              return (
+                <button
+                  key={tab.id}
+                  onClick={() => setFilter(tab.id)}
+                  className={`apple-segmented-item flex items-center gap-1.5 ${
+                    filter === tab.id ? 'apple-segmented-active' : 'apple-segmented-inactive'
+                  }`}
+                >
+                  <Icon className="w-3.5 h-3.5" />
+                  <span className="hidden sm:inline">{tab.label}</span>
+                </button>
+              );
+            })}
           </div>
         </div>
 
-        {/* Feature Cards Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {/* Feature Cards Grid — iOS Grouped Style */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           <AnimatePresence mode="popLayout">
             {filteredBenefits.map((benefit) => {
               const Icon = benefit.icon;
@@ -229,36 +211,40 @@ export default function Benefits() {
                 <motion.div
                   key={benefit.id}
                   layout
-                  initial={{ opacity: 0, scale: 0.95 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0, scale: 0.95 }}
-                  transition={{ duration: 0.2 }}
-                  className="apple-card p-7 text-left flex flex-col justify-between group cursor-pointer"
+                  initial={{ opacity: 0, y: 12 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -8 }}
+                  transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
+                  className="ios-section p-5 text-left flex flex-col justify-between cursor-pointer group active:scale-[0.99] transition-transform"
                   onClick={() => toggleExpand(benefit.id)}
                 >
                   <div>
-                    {/* Header Row with Icon and Badge */}
-                    <div className="flex items-center justify-between mb-5">
+                    {/* Header */}
+                    <div className="flex items-start justify-between mb-4">
                       <div 
-                        className="w-12 h-12 rounded-2xl flex items-center justify-center transition-transform duration-300 group-hover:scale-105"
+                        className="w-11 h-11 rounded-2xl flex items-center justify-center transition-transform duration-300 group-hover:scale-110"
                         style={{ backgroundColor: benefit.iconBg, color: benefit.accentColor }}
                       >
-                        <Icon className="w-6 h-6" />
+                        <Icon className="w-5 h-5" />
                       </div>
-                      <span className="text-[10px] font-bold px-3 py-1 rounded-full bg-black/5 text-[#180606] uppercase tracking-wider">
+                      <span className="text-[10px] font-bold px-2.5 py-1 rounded-lg bg-black/[0.03] text-gray-500 uppercase tracking-wider">
                         {benefit.badge}
                       </span>
                     </div>
 
-                    <h3 className="text-lg font-bold text-[#180606] mb-1">
+                    <h3 className="text-base font-bold text-[#180606] mb-0.5 leading-snug">
                       {benefit.title}
                     </h3>
-                    <p className="text-xs font-semibold text-gray-500 mb-3">
+                    <p className="text-xs text-gray-400 mb-3">
                       {benefit.subtitle}
                     </p>
-                    <p className="text-gray-600 text-xs sm:text-sm leading-relaxed mb-4">
-                      {benefit.description}
-                    </p>
+
+                    {/* Only show full description when expanded */}
+                    {!isExpanded && (
+                      <p className="text-gray-500 text-xs leading-relaxed line-clamp-2">
+                        {benefit.description}
+                      </p>
+                    )}
                   </div>
 
                   {/* Expandable Technical Details */}
@@ -268,21 +254,27 @@ export default function Benefits() {
                         initial={{ opacity: 0, height: 0 }}
                         animate={{ opacity: 1, height: 'auto' }}
                         exit={{ opacity: 0, height: 0 }}
-                        className="mb-4 pt-3 border-t border-black/[0.06] space-y-1.5"
+                        className="mb-3 space-y-2"
                       >
-                        <p className="text-[11px] font-bold text-gray-700 uppercase tracking-wide mb-1">Injected Parameters:</p>
-                        {benefit.technicalDetails.map((detail, idx) => (
-                          <div key={idx} className="flex items-center gap-2 text-xs text-gray-600 font-mono">
-                            <FiCheckCircle className="w-3.5 h-3.5 text-[#31AAA9] flex-shrink-0" />
-                            <span className="truncate">{detail}</span>
-                          </div>
-                        ))}
+                        <p className="text-gray-500 text-xs leading-relaxed mb-3">
+                          {benefit.description}
+                        </p>
+
+                        <div className="p-3 rounded-xl bg-[#F7F6F3] space-y-1.5">
+                          <p className="text-[10px] font-bold text-gray-500 uppercase tracking-wide">Injected Parameters</p>
+                          {benefit.technicalDetails.map((detail, idx) => (
+                            <div key={idx} className="flex items-center gap-2 text-[11px] text-gray-600">
+                              <FiCheckCircle className="w-3 h-3 text-[#31AAA9] flex-shrink-0" />
+                              <span className="font-mono truncate">{detail}</span>
+                            </div>
+                          ))}
+                        </div>
                       </motion.div>
                     )}
 
-                    <div className="pt-3 border-t border-black/[0.05] flex items-center justify-between text-xs font-semibold text-[#31AAA9]">
-                      <span>{isExpanded ? 'Collapse specs' : 'Tap to expand specs'}</span>
-                      <MdChevronRight className={`w-4 h-4 transition-transform duration-200 ${isExpanded ? 'rotate-90' : 'group-hover:translate-x-1'}`} />
+                    <div className="pt-3 border-t border-black/[0.04] flex items-center justify-between text-xs font-semibold">
+                      <span className="text-gray-400">{isExpanded ? 'Collapse' : 'View specs'}</span>
+                      <FiChevronDown className={`w-4 h-4 text-gray-400 transition-transform duration-300 ${isExpanded ? 'rotate-180' : ''}`} />
                     </div>
                   </div>
                 </motion.div>
@@ -292,15 +284,14 @@ export default function Benefits() {
         </div>
 
         {/* Bottom Trust Badge */}
-        <div className="mt-16 text-center">
-          <div className="inline-flex items-center p-1.5 bg-white border border-black/[0.08] rounded-full shadow-xs">
-            <span className="px-4 py-1.5 text-xs text-gray-700 font-medium">
-              Over 250,000+ videos masked for TikTok & Instagram
-            </span>
-            <span className="bg-[#180606] text-[#F8E0A4] px-4 py-1.5 rounded-full text-xs font-bold flex items-center gap-1.5">
-              <span className="w-1.5 h-1.5 rounded-full bg-[#31AAA9]" />
-              0 Platform Rejections
-            </span>
+        <div className="mt-12 flex justify-center">
+          <div className="inline-flex items-center gap-3 px-5 py-3 bg-white rounded-2xl border border-black/[0.04] shadow-sm">
+            <div className="flex items-center gap-2 text-sm text-gray-600 font-medium">
+              <span className="w-2 h-2 rounded-full bg-[#31AAA9] animate-pulse" />
+              250,000+ videos masked
+            </div>
+            <div className="w-px h-4 bg-gray-200" />
+            <span className="text-sm font-bold text-[#180606]">0 Platform Rejections</span>
           </div>
         </div>
 

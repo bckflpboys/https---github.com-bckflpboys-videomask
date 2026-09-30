@@ -29,7 +29,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <head />
-      <body className={`${inter.className} min-h-screen bg-[#FAF9F6] antialiased`}>
+      <body className={`${inter.className} min-h-screen bg-[#F2F1ED] antialiased`}>
         <Providers>
           {children}
           <MobileDock />
